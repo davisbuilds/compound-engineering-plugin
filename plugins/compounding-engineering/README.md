@@ -6,7 +6,7 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 
 | Component | Count |
 |-----------|-------|
-| Agents | 24 |
+| Agents | 23 |
 | Commands | 16 |
 | Skills | 11 |
 | MCP Servers | 2 |
@@ -47,13 +47,12 @@ Agents are organized into categories for easier discovery.
 | `design-iterator` | Iteratively refine UI through systematic design iterations |
 | `figma-design-sync` | Synchronize web implementations with Figma designs |
 
-### Workflow (6)
+### Workflow (5)
 
 | Agent | Description |
 |-------|-------------|
 | `bug-reproduction-validator` | Systematically reproduce and validate bug reports |
 | `every-style-editor` | Edit content to conform to Every's style guide |
-| `feedback-codifier` | Codify feedback patterns into reviewer agents |
 | `lint` | Run linting and code quality checks on Ruby and ERB files |
 | `pr-comment-resolver` | Address PR comments and implement fixes |
 | `spec-flow-analyzer` | Analyze user flows and identify gaps in specifications |

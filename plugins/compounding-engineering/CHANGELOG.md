@@ -5,6 +5,12 @@ All notable changes to the compounding-engineering plugin will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2024-11-26
+
+### Removed
+
+- **`feedback-codifier` agent** - Removed from workflow agents. Agent count reduced from 24 to 23.
+
 ## [2.5.0] - 2024-11-25
 
 ### Added

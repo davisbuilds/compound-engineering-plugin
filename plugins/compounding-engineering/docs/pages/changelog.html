@@ -33,10 +33,10 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (24)</a></li>
+            <li><a href="agents.html">Agents (23)</a></li>
             <li><a href="commands.html">Commands (13)</a></li>
             <li><a href="skills.html">Skills (11)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (2)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (two)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -48,6 +48,7 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
+            <li><a href="#v2.6.0">v2.6.0</a></li>
             <li><a href="#v2.5.0">v2.5.0</a></li>
             <li><a href="#v2.4.1">v2.4.1</a></li>
             <li><a href="#v2.4.0">v2.4.0</a></li>
@@ -84,6 +85,24 @@
           <a href="https://semver.org/">Semantic Versioning</a> and
           <a href="https://keepachangelog.com/">Keep a Changelog</a> conventions.
         </p>
+
+        <!-- Version 2.6.0 -->
+        <section id="v2.6.0" class="version-section">
+          <div class="version-header">
+            <h2>v2.6.0</h2>
+            <span class="version-date">2024-11-26</span>
+          </div>
+
+          <div class="changelog-category removed">
+            <h3><i class="fa-solid fa-minus"></i> Removed</h3>
+            <ul>
+              <li>
+                <strong><code>feedback-codifier</code> agent</strong> - Removed from workflow agents.
+                Agent count reduced from 24 to 23.
+              </li>
+            </ul>
+          </div>
+        </section>
 
         <!-- Version 2.5.0 -->
         <section id="v2.5.0" class="version-section">
@@ -194,7 +213,7 @@
             <ul>
               <li>
                 <strong>Context7 MCP Server</strong> - Bundled Context7 for instant framework documentation
-                lookup. Provides up-to-date docs for Rails, React, Next.js, and 100+ other frameworks.
+                lookup. Provides up-to-date docs for Rails, React, Next.js, and more than 100 other frameworks.
               </li>
             </ul>
           </div>
@@ -283,7 +302,7 @@
           <div class="changelog-category added">
             <h3><i class="fa-solid fa-plus"></i> Added</h3>
 
-            <h4>New Agents (7)</h4>
+            <h4>New Agents (seven)</h4>
             <ul>
               <li><code>design-iterator</code> - Iteratively refine UI components through systematic design iterations</li>
               <li><code>design-implementation-reviewer</code> - Verify UI implementations match Figma design specifications</li>
@@ -294,7 +313,7 @@
               <li><code>ankane-readme-writer</code> - Create READMEs following Ankane-style template for Ruby gems</li>
             </ul>
 
-            <h4>New Commands (9)</h4>
+            <h4>New Commands (nine)</h4>
             <ul>
               <li><code>/changelog</code> - Create engaging changelogs for recent merges</li>
               <li><code>/plan_review</code> - Multi-agent plan review in parallel</li>
@@ -327,10 +346,10 @@
             <h4>Agents Reorganized by Category</h4>
             <ul>
               <li><code>review/</code> (10 agents) - Code quality, security, performance reviewers</li>
-              <li><code>research/</code> (4 agents) - Documentation, patterns, history analysis</li>
-              <li><code>design/</code> (3 agents) - UI/design review and iteration</li>
-              <li><code>workflow/</code> (6 agents) - PR resolution, bug validation, linting</li>
-              <li><code>docs/</code> (1 agent) - README generation</li>
+              <li><code>research/</code> (four agents) - Documentation, patterns, history analysis</li>
+              <li><code>design/</code> (three agents) - UI/design review and iteration</li>
+              <li><code>workflow/</code> (six agents) - PR resolution, bug validation, linting</li>
+              <li><code>docs/</code> (one agent) - README generation</li>
             </ul>
           </div>
 
@@ -417,7 +436,7 @@
 
             <h4>17 Specialized Agents</h4>
 
-            <p><strong>Code Review (5)</strong></p>
+            <p><strong>Code Review (five)</strong></p>
             <ul>
               <li><code>kieran-rails-reviewer</code> - Rails code review with strict conventions</li>
               <li><code>kieran-python-reviewer</code> - Python code review with quality standards</li>
@@ -426,7 +445,7 @@
               <li><code>code-simplicity-reviewer</code> - Final pass for simplicity and minimalism</li>
             </ul>
 
-            <p><strong>Analysis & Architecture (4)</strong></p>
+            <p><strong>Analysis & Architecture (four)</strong></p>
             <ul>
               <li><code>architecture-strategist</code> - Architectural decisions and compliance</li>
               <li><code>pattern-recognition-specialist</code> - Design pattern analysis</li>
@@ -434,7 +453,7 @@
               <li><code>performance-oracle</code> - Performance analysis and optimization</li>
             </ul>
 
-            <p><strong>Research (4)</strong></p>
+            <p><strong>Research (four)</strong></p>
             <ul>
               <li><code>framework-docs-researcher</code> - Framework documentation research</li>
               <li><code>best-practices-researcher</code> - External best practices gathering</li>
@@ -442,14 +461,14 @@
               <li><code>repo-research-analyst</code> - Repository structure and conventions</li>
             </ul>
 
-            <p><strong>Workflow (3)</strong></p>
+            <p><strong>Workflow (three)</strong></p>
             <ul>
               <li><code>every-style-editor</code> - Every's style guide compliance</li>
               <li><code>pr-comment-resolver</code> - PR comment resolution</li>
               <li><code>feedback-codifier</code> - Feedback pattern codification</li>
             </ul>
 
-            <h4>6 Slash Commands</h4>
+            <h4>Six Slash Commands</h4>
             <ul>
               <li><code>/plan</code> - Create implementation plans</li>
               <li><code>/review</code> - Comprehensive code reviews</li>

@@ -1,7 +1,7 @@
 {
   "name": "compounding-engineering",
-  "version": "2.5.0",
-  "description": "AI-powered development tools. 24 agents, 16 commands, 11 skills, 2 MCP servers for code review, research, design, and workflow automation.",
+  "version": "2.6.0",
+  "description": "AI-powered development tools. 23 agents, 16 commands, 11 skills, 2 MCP servers for code review, research, design, and workflow automation.",
   "author": {
     "name": "Kieran Klaassen",
     "email": "kieran@every.to",

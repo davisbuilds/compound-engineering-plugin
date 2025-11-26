@@ -7,9 +7,9 @@
 
 :root {
   /* Theme configuration */
-  --theme-hue: 250;
-  --theme-saturation: 0.3;
-  --theme-contrast: 0.85;
+  --theme-hue: 243;
+  --theme-saturation: 1;
+  --theme-contrast: 0.71;
 
   /* Fonts */
   --font-text: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;

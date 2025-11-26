@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Compounding Engineering - AI-Powered Development Tools for Claude Code</title>
-  <meta content="AI-powered development tools that get smarter with every use. 24 agents, 16 commands, 11 skills, 2 MCP servers." name="description" />
+  <meta content="AI-powered development tools that get smarter with every use. 23 agents, 16 commands, 11 skills, two MCP servers." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <!-- Open Graph -->
@@ -57,14 +57,14 @@
       <section class="hero-section">
         <div class="heading hero centered">
           <a href="https://github.com/EveryInc/every-marketplace/releases" class="eyebrow">
-            <i class="fa-solid fa-rocket"></i> Version 2.5.0 released!
+            <i class="fa-solid fa-rocket"></i> Version 2.6.0 released!
           </a>
           <h1 class="balanced">
             AI-Powered Development Tools That Get Smarter With Every Use
           </h1>
           <p class="paragraph m secondary balanced">
-            Make each unit of engineering work easier than the last. 24 specialized agents, 16 powerful commands,
-            11 intelligent skills, and 2 MCP servers for code review, research, design, and workflow automation.
+            Make each unit of engineering work easier than the last. 23 specialized agents, 16 powerful commands,
+            11 intelligent skills, and two MCP servers for code review, research, design, and workflow automation.
           </p>
           <div class="button-group margin-paragraph centered">
             <a href="#install" class="button primary">
@@ -81,7 +81,7 @@
       <section class="stats-section">
         <div class="stats-container">
           <div class="stat-card">
-            <div class="stat-number">24</div>
+            <div class="stat-number">23</div>
             <div class="stat-label">Specialized Agents</div>
           </div>
           <div class="stat-card">
@@ -127,7 +127,7 @@
               <p class="pillar-description">
                 Before writing a single line of code, gather context. Research agents explore
                 documentation, analyze git history, and find best practices. The <code>/workflows:plan</code>
-                command orchestrates 3 research agents in parallel to create comprehensive implementation plans.
+                command orchestrates three research agents in parallel to create comprehensive implementation plans.
               </p>
               <div class="pillar-tools">
                 <span class="tool-tag">framework-docs-researcher</span>
@@ -163,7 +163,7 @@
               <h3>Assess</h3>
               <p class="pillar-tagline">Multiple perspectives, comprehensive coverage</p>
               <p class="pillar-description">
-                The <code>/workflows:review</code> command launches 12+ review agents in parallel: security,
+                The <code>/workflows:review</code> command launches 12 or more review agents in parallel: security,
                 performance, architecture, data integrity, patterns, and more. Findings are categorized by
                 severity (P1/P2/P3) and stored as actionable todo files.
               </p>
@@ -183,13 +183,11 @@
               <p class="pillar-tagline">Turn solutions into knowledge</p>
               <p class="pillar-description">
                 Every solved problem should teach the system. The <code>/workflows:codify</code> command
-                captures solutions as searchable documentation. The <code>feedback-codifier</code> agent
-                extracts patterns from code reviews to improve future reviews.
+                captures solutions as searchable documentation with YAML frontmatter for fast lookup.
               </p>
               <div class="pillar-tools">
                 <span class="tool-tag">/workflows:codify</span>
                 <span class="tool-tag">codify-docs skill</span>
-                <span class="tool-tag">feedback-codifier</span>
                 <span class="tool-tag">file-todos skill</span>
               </div>
             </div>
@@ -227,7 +225,7 @@
       <section id="agents">
         <div class="heading">
           <h2 class="no-top-margin">
-            <i class="fa-solid fa-users-gear color-accent"></i> 24 Specialized Agents
+            <i class="fa-solid fa-users-gear color-accent"></i> 23 Specialized Agents
           </h2>
           <p class="paragraph m secondary">
             Each agent brings deep expertise in a specific domain. Run them individually or orchestrate
@@ -324,7 +322,7 @@
 
         <!-- Research Agents -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-microscope"></i> Research Agents (4)</h3>
+          <h3><i class="fa-solid fa-microscope"></i> Research Agents (four)</h3>
           <div class="grid columns-2">
             <div class="agent-card">
               <div class="agent-header">
@@ -363,7 +361,7 @@
 
         <!-- Design Agents -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-palette"></i> Design Agents (3)</h3>
+          <h3><i class="fa-solid fa-palette"></i> Design Agents (three)</h3>
           <div class="grid columns-3">
             <div class="agent-card">
               <div class="agent-header">
@@ -394,7 +392,7 @@
 
         <!-- Workflow Agents -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-gears"></i> Workflow Agents (6)</h3>
+          <h3><i class="fa-solid fa-gears"></i> Workflow Agents (five)</h3>
           <div class="grid columns-2">
             <div class="agent-card">
               <div class="agent-header">
@@ -411,14 +409,6 @@
               </div>
               <p class="agent-description">Address PR comments and implement fixes. Batch process review feedback.</p>
               <code class="agent-usage">claude agent pr-comment-resolver</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">feedback-codifier</span>
-                <span class="agent-badge">Knowledge</span>
-              </div>
-              <p class="agent-description">Codify feedback patterns into reviewer agents. Build institutional knowledge.</p>
-              <code class="agent-usage">claude agent feedback-codifier</code>
             </div>
             <div class="agent-card">
               <div class="agent-header">
@@ -449,7 +439,7 @@
 
         <!-- Docs Agent -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-file-lines"></i> Documentation Agent (1)</h3>
+          <h3><i class="fa-solid fa-file-lines"></i> Documentation Agent (one)</h3>
           <div class="grid">
             <div class="agent-card full-width">
               <div class="agent-header">
@@ -489,7 +479,7 @@
               <div class="command-header">
                 <code class="command-name">/workflows:review</code>
               </div>
-              <p class="command-description">Run exhaustive code reviews using 12+ parallel agents, ultra-thinking, and worktrees.</p>
+              <p class="command-description">Run exhaustive code reviews using 12 or more parallel agents, ultra-thinking, and worktrees.</p>
             </div>
             <div class="command-card">
               <div class="command-header">
@@ -733,7 +723,7 @@
       <section id="mcp-servers">
         <div class="heading">
           <h2 class="no-top-margin">
-            <i class="fa-solid fa-server color-accent"></i> 2 MCP Servers
+            <i class="fa-solid fa-server color-accent"></i> Two MCP Servers
           </h2>
           <p class="paragraph m secondary">
             Model Context Protocol servers extend Claude Code's capabilities with
@@ -765,14 +755,14 @@
               <i class="fa-solid fa-book-open mcp-icon"></i>
               <span class="mcp-name">Context7</span>
             </div>
-            <p class="mcp-description">Framework documentation lookup for 100+ frameworks.</p>
+            <p class="mcp-description">Framework documentation lookup for more than 100 frameworks.</p>
             <div class="mcp-tools">
               <h4>Tools Provided:</h4>
               <ul>
                 <li><code>resolve-library-id</code> - Find library ID</li>
                 <li><code>get-library-docs</code> - Get documentation</li>
               </ul>
-              <p class="mcp-note">Supports: Rails, React, Next.js, Vue, Django, Laravel, and 100+ more</p>
+              <p class="mcp-note">Supports: Rails, React, Next.js, Vue, Django, Laravel, and more than 100 others</p>
             </div>
           </div>
         </div>

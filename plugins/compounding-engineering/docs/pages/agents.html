@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Agent Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 24 specialized AI agents in the Compounding Engineering plugin." name="description" />
+  <meta content="Complete reference for all 23 specialized AI agents in the Compounding Engineering plugin." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -33,7 +33,7 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html" class="active">Agents (24)</a></li>
+            <li><a href="agents.html" class="active">Agents (23)</a></li>
             <li><a href="commands.html">Commands (13)</a></li>
             <li><a href="skills.html">Skills (11)</a></li>
             <li><a href="mcp-servers.html">MCP Servers (2)</a></li>
@@ -50,7 +50,7 @@
           <ul>
             <li><a href="#review-agents">Review (10)</a></li>
             <li><a href="#research-agents">Research (4)</a></li>
-            <li><a href="#workflow-agents">Workflow (6)</a></li>
+            <li><a href="#workflow-agents">Workflow (5)</a></li>
             <li><a href="#design-agents">Design (3)</a></li>
             <li><a href="#docs-agents">Docs (1)</a></li>
           </ul>
@@ -75,7 +75,7 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-users-gear color-accent"></i> Agent Reference</h1>
         <p class="lead">
-          Complete documentation for all 24 specialized AI agents. Each agent brings deep expertise
+          Complete documentation for all 23 specialized AI agents. Each agent brings deep expertise
           in a specific domain and can be invoked individually or orchestrated together.
         </p>
 
@@ -421,7 +421,7 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
 
         <!-- Workflow Agents -->
         <section id="workflow-agents">
-          <h2><i class="fa-solid fa-gears"></i> Workflow Agents (6)</h2>
+          <h2><i class="fa-solid fa-gears"></i> Workflow Agents (5)</h2>
           <p>Workflow agents that automate common development tasks like bug reproduction, PR resolution, and linting.</p>
 
           <div class="agent-detail" id="bug-reproduction-validator">
@@ -465,27 +465,6 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
             </ul>
             <div class="card-code-block">
               <pre><code>claude agent pr-comment-resolver</code></pre>
-            </div>
-          </div>
-
-          <div class="agent-detail" id="feedback-codifier">
-            <div class="agent-detail-header">
-              <h3>feedback-codifier</h3>
-              <span class="agent-badge">Knowledge</span>
-            </div>
-            <p class="agent-detail-description">
-              Analyzes code review feedback to extract patterns and update reviewer configurations.
-              Uses Opus model for deep analysis.
-            </p>
-            <h4>Capabilities</h4>
-            <ul>
-              <li>Extract core patterns from code reviews</li>
-              <li>Categorize by type (structure, testing, security, performance)</li>
-              <li>Formulate actionable guidelines</li>
-              <li>Update existing reviewer agents with new standards</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent feedback-codifier</code></pre>
             </div>
           </div>
 
