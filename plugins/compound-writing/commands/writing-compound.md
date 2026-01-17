@@ -1,7 +1,7 @@
 ---
 name: writing:compound
 description: Capture learnings from successful writing to improve future work
-argument-hint: "[path to published piece or 'latest']"
+argument-hint: "[path to published piece] or [draft-ID] or 'latest'"
 ---
 
 # Writing Compound Command
@@ -12,7 +12,32 @@ Turn this piece's successes into permanent improvements for future writing.
 
 <piece_path> #$ARGUMENTS </piece_path>
 
-If "latest" is provided, find the most recent published/approved piece.
+**Input Types:**
+- `drafts/[slug]/draft-final.md` → Analyze specific piece
+- `draft-2` → Find draft with that ID
+- `latest` → Find most recent approved/published piece
+
+---
+
+## Skills to Load
+
+Before starting, load these skills:
+
+```
+Skill: voice-capture
+  - Extract voice patterns from successful writing
+  - Build/update voice profiles
+
+Skill: scratchpad
+  - Read session feedback history
+  - Promote recurring preferences to patterns
+
+Skill: context-notes
+  - Read review learnings
+  - Document patterns for future commands
+```
+
+---
 
 ## The Compound Philosophy
 
@@ -23,252 +48,343 @@ This command extracts what worked and encodes it for reuse:
 - Structure patterns that flowed well
 - Voice elements that landed
 - Transitions that felt invisible
+- Anti-patterns that were edited out
 
-## Workflow Overview
+---
 
-1. Analyze what made this piece work
-2. Extract reusable patterns
-3. Update style documentation
-4. Create templates for similar pieces
-5. Log anti-patterns that were edited out
+## Step 1: Load the Piece and History
 
-## Phase 1: Success Analysis
-
-### Load the Piece and History
 ```
-Read the final published version
-Read all draft versions (v1, v2, etc.)
-Read review reports
-Read scratchpad (drafts/.scratchpad.md) for session feedback
-Identify:
-- What changed between drafts
-- What reviewers praised
-- What the writer kept unchanged
-- What the scratchpad marked as "What Works ✓"
+Gather all artifacts:
+1. Final/published version
+2. All draft versions (v1, v2, etc.)
+3. Review reports
+4. Scratchpad (drafts/.scratchpad.md)
+5. Original brief and outline
 ```
 
-### Identify What Worked
+Build timeline:
+```
+Brief → Outline → Draft 1 → Feedback → Draft 2 → Review → Draft 3 → Final
+                     ↓           ↓          ↓
+              [Changes made] [Preferences] [Fixes applied]
+```
 
+---
+
+## Step 2: Identify Success Factors (BRAINSTORM)
+
+```
 Use AskUserQuestion:
+
+Question: "What made this piece successful? (Select all that apply)"
+
+Options (multiSelect: true):
+1. **The hook grabbed attention** - Opening was compelling
+2. **The structure was clear** - Easy to follow, well-paced
+3. **The voice was consistent** - Tone matched throughout
+4. **The examples were concrete** - Showed, didn't just tell
+5. **The argument was persuasive** - Made a strong case
+6. **Something else** - Describe what worked
 ```
-What made this piece successful?
-1. The hook grabbed attention
-2. The structure was clear
-3. The voice was consistent
-4. The examples were concrete
-5. Something else: [describe]
-```
 
-Allow multiple selections to understand success factors.
+---
 
-## Phase 2: Extract Patterns
+## Step 3: Analyze Hook
 
-### Hook Analysis
+### Extract Opening
+
 ```markdown
 ## Hook Extraction
 
-**Opening text**:
-> [First 50-100 words]
+**Opening text** (first 50-100 words):
+> [Actual opening text]
 
 **Hook type**: [Story/Stat/Tension/Question/Surprise]
 
 **Why it worked**:
 - [Specific reason 1]
 - [Specific reason 2]
-
-**Formula abstracted**:
-[General pattern that could be reused]
-
-**Similar topics it could work for**:
-- [Topic 1]
-- [Topic 2]
 ```
 
-### Structure Analysis
+### Abstract the Formula (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "What made this hook work? How would you describe the formula?"
+
+Options:
+1. **[Auto-generated formula based on pattern]**
+2. **[Alternative formula interpretation]**
+3. **Custom** - Describe the formula in your own words
+```
+
+### Document Pattern
+
+```markdown
+## Pattern: hook-[type]-[topic]
+
+**Formula**:
+"[Generalized pattern with placeholders]"
+
+**Example from this piece**:
+> [Actual opening]
+
+**When to use**:
+- [Topic type 1]
+- [Topic type 2]
+
+**Variations**:
+- [Variation 1]
+- [Variation 2]
+
+**Extracted from**: [piece path]
+**Date**: [timestamp]
+```
+
+---
+
+## Step 4: Analyze Structure
+
+### Map the Skeleton
+
 ```markdown
 ## Structure Extraction
 
-**Pattern used**: [Problem-Solution/Journey/Listicle/Story]
+**Pattern used**: [Problem-Solution/Journey/Listicle/Story/Custom]
 
 **Section breakdown**:
-1. [Section type] - [purpose] - [word count]
-2. [Section type] - [purpose] - [word count]
-...
+| Section | Purpose | Word Count | Key Element |
+|---------|---------|------------|-------------|
+| Hook | Grab attention | 50 | Surprising stat |
+| Section 1 | Establish problem | 300 | Concrete example |
+| Section 2 | Present solution | 400 | Step-by-step |
+| Section 3 | Prove it works | 350 | Case study |
+| Conclusion | Call to action | 150 | Clear CTA |
 
 **What made this structure work**:
 - [Insight 1]
 - [Insight 2]
 
-**Topics this structure fits**:
-- [Topic type 1]
-- [Topic type 2]
+**Pacing notes**:
+- [Where it sped up/slowed down and why]
 ```
 
-### Voice Analysis
-```markdown
-## Voice Extraction
-
-**Consistent elements identified**:
-- Vocabulary patterns: [words/phrases used repeatedly]
-- Sentence rhythm: [short-long patterns]
-- Tone markers: [specific indicators]
-
-**Voice profile additions**:
-```yaml
-# New exemplar
-exemplars:
-  - path: "[this piece path]"
-    why: "[specific voice element demonstrated]"
-```
-
-**Prohibited additions** (if anti-patterns found):
-- "[Word/phrase]" - because: [reason]
-```
-
-### Transition Analysis
-```markdown
-## Transitions Extraction
-
-**Smooth transitions found**:
-1. Between [section X] and [section Y]:
-   > "[transition text]"
-   - Type: [causal/contrast/continuation]
-   - Why it worked: [reason]
-
-2. [Continue for notable transitions]
-
-**Transition formulas**:
-- "[Formula 1]" - use when: [context]
-- "[Formula 2]" - use when: [context]
-```
-
-## Phase 3: Update Documentation
-
-### Update Pattern Files
-
-Create or update files in `docs/patterns/`:
+### Create Template (BRAINSTORM if novel)
 
 ```
-docs/patterns/
-├── hooks/
-│   └── [hook-type]-[topic].md      # New hook pattern
-├── structures/
-│   └── [pattern-name].md           # Structure template
-├── transitions/
-│   └── common-transitions.md       # Append new transitions
-└── voice/
-    └── [voice-name]-exemplars.md   # New exemplar reference
+Use AskUserQuestion:
+
+Question: "This structure worked well. Should I save it as a reusable template?"
+
+Options:
+1. **Yes, save as template** - Create new structure pattern
+2. **Update existing** - Enhance an existing structure template
+3. **Skip** - Structure isn't novel enough to save
 ```
 
-### Pattern File Format
-```markdown
----
-title: "[Pattern Name]"
-type: [hook/structure/transition/voice]
-extracted_from: "[original piece path]"
-created: [timestamp]
-tags: [topic1, topic2]
----
-
-## Pattern
-
-[Description of the pattern]
-
-## Example
-
-> [The actual text from the piece]
-
-## When to Use
-
-- [Context 1]
-- [Context 2]
-
-## How to Apply
-
-1. [Step 1]
-2. [Step 2]
-
-## Variations
-
-- [Variation 1]
-- [Variation 2]
-```
-
-### Update Voice Profile
-
-If voice profile exists, append new learnings:
-```yaml
-# Add to exemplars
-exemplars:
-  - path: "[new piece]"
-    why: "[what it demonstrates]"
-
-# Add to prohibited if anti-patterns found
-prohibited:
-  - "[new prohibited item]"
-```
-
-## Phase 4: Create Templates
-
-### If Structure Was Novel
-
-Create a reusable template:
+If saving:
 
 ```markdown
 # Template: [Template Name]
 
 **Best for**: [Topic types this works for]
+**Word count target**: [range]
 
-**Structure**:
+## Structure
 
-## Hook
-[Hook formula with placeholders]
-
-## Section 1: [Purpose]
-[Guidance for this section]
+### Hook (0-50 words)
+[Formula with guidance]
 - Include: [required elements]
 - Avoid: [anti-patterns]
 
-## Section 2: [Purpose]
-[Continue pattern...]
+### Section 1: [Purpose] (~X words)
+[Guidance]
 
-## Conclusion
+### Section 2: [Purpose] (~X words)
+[Guidance]
+
+### Conclusion (~X words)
 [Closing formula]
 
-**Word count target**: [range]
 **Key elements**: [list]
+**Extracted from**: [piece]
 ```
 
-Save to `docs/patterns/structures/[template-name].md`
+---
 
-## Phase 5: Log Anti-Patterns
+## Step 5: Analyze Voice
 
-### What Was Edited Out
+### Extract Voice Patterns
 
-From review history, identify:
-- Phrases that were consistently cut
-- Structures that were reorganized
+```markdown
+## Voice Extraction
+
+**Consistent elements identified**:
+
+### Vocabulary patterns
+- Words/phrases used repeatedly: [list]
+- Technical level: [accessible/moderate/expert]
+- Formality: [casual/professional/academic]
+
+### Sentence rhythm
+- Average sentence length: [X] words
+- Pattern: [e.g., "short-short-long", "varied"]
+- Distinctive constructions: [list]
+
+### Tone markers
+- Emotional register: [warm/neutral/intense]
+- Personality level: [high/medium/low]
+- Direct address: [uses "you" / avoids "you"]
+```
+
+### Update Voice Profile (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Found these voice elements. How should I update your voice profile?"
+
+Options:
+1. **Add as exemplar** - Reference this piece as an example
+2. **Extract traits** - Add specific patterns to profile
+3. **Both** - Add exemplar and extract traits
+4. **Skip** - Voice isn't distinctive enough
+```
+
+If updating:
+
+```yaml
+# Add to .claude/writing-knowledge/voice-profiles/[name].yaml
+
+exemplars:
+  - path: "[piece path]"
+    why: "[specific voice element demonstrated]"
+
+traits:
+  vocabulary: [updated patterns]
+  rhythm: [updated patterns]
+  tone: [updated markers]
+
+# If anti-patterns found during editing:
+prohibited:
+  - "[word/phrase]"  # because: [reason]
+```
+
+---
+
+## Step 6: Analyze Transitions
+
+### Extract Smooth Transitions
+
+```markdown
+## Transitions Extraction
+
+**Notable transitions found**:
+
+### Between [Section X] and [Section Y]
+> "[Actual transition text]"
+
+**Type**: [causal/contrast/continuation/callback]
+**Why it worked**: [reason]
+**Formula**: "[Generalized pattern]"
+```
+
+### Add to Transition Library
+
+```markdown
+# Append to docs/patterns/transitions/common-transitions.md
+
+## [Transition Type]: [Name]
+
+**Formula**: "[Pattern with placeholders]"
+**Example**: "[From this piece]"
+**Use when**: [context]
+**Extracted from**: [piece] - [date]
+```
+
+---
+
+## Step 7: Log Anti-Patterns
+
+### Review What Was Edited Out
+
+Analyze draft history to find:
+- Phrases consistently cut
+- Structures reorganized
 - Claims that needed rework
+- Voice drift that was corrected
 
 ```markdown
 ## Anti-Patterns Identified
 
 ### Phrases to Avoid
-- "[Phrase]" - cut because: [reason]
-- "[Phrase]" - cut because: [reason]
+| Phrase | Why Cut | Better Alternative |
+|--------|---------|-------------------|
+| "[phrase]" | [reason] | "[alternative]" |
 
 ### Structural Issues
-- [Issue] - fixed by: [solution]
+| Issue | How Fixed |
+|-------|-----------|
+| [issue] | [solution] |
 
 ### Claims That Failed Fact-Check
-- "[Claim type]" - always verify: [specific check]
+| Claim Type | Always Verify |
+|------------|---------------|
+| "[type]" | [specific check] |
 ```
 
-Add to appropriate style guide or voice profile.
+---
 
-## Output
+## Step 8: Promote Scratchpad to Patterns
 
-### Compound Report
+Read `drafts/.scratchpad.md` and identify recurring preferences:
+
+```
+For each preference that appeared 3+ times:
+  1. Extract to pattern library
+  2. Add to voice profile
+  3. Mark as promoted in scratchpad
+```
+
+### Promotion Summary (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Found [N] recurring preferences in scratchpad. Promote to permanent patterns?"
+
+Options:
+1. **Promote all** - Add all recurring preferences to patterns
+2. **Review each** - Let me decide one by one
+3. **Skip** - Keep in scratchpad for now
+```
+
+---
+
+## Step 9: Update Knowledge Base
+
+Save extracted patterns to:
+
+```
+.claude/writing-knowledge/
+├── voice-profiles/
+│   └── [updated profile].yaml
+├── patterns/
+│   ├── hooks/
+│   │   └── [new hook pattern].md
+│   ├── structures/
+│   │   └── [new structure template].md
+│   └── transitions/
+│       └── common-transitions.md  # appended
+└── index.md  # updated with new patterns
+```
+
+---
+
+## Step 10: Generate Compound Report
+
 Save to `docs/patterns/compound-log/[date]-[piece-slug].md`:
 
 ```markdown
@@ -276,77 +392,118 @@ Save to `docs/patterns/compound-log/[date]-[piece-slug].md`:
 
 **Date**: [timestamp]
 **Piece**: [path to original]
+**Success factors**: [user-selected factors]
 
 ## What Worked
-[Summary of success factors]
 
-## Patterns Extracted
-- Hook pattern: [saved to path]
-- Structure template: [saved to path]
-- Transitions: [X] added to common-transitions.md
-- Voice exemplar: [added to profile]
+### Hook
+**Type**: [hook type]
+**Formula**: [pattern]
+**Saved to**: [file path]
+
+### Structure
+**Pattern**: [structure name]
+**Template created**: [yes/no]
+**Saved to**: [file path]
+
+### Voice
+**Exemplar added**: [yes/no]
+**Traits extracted**: [list]
+**Updated profile**: [profile name]
+
+### Transitions
+**New transitions**: [count]
+**Added to**: common-transitions.md
 
 ## Anti-Patterns Logged
-- [X] phrases added to prohibited list
-- [X] structural warnings documented
+- [N] phrases added to prohibited list
+- [N] structural warnings documented
+- [N] fact-check reminders added
+
+## Scratchpad Promotions
+- [N] preferences promoted to patterns
+- [N] anti-patterns made permanent
 
 ## Files Updated
-- `docs/patterns/hooks/[file].md`
-- `docs/patterns/structures/[file].md`
-- `docs/patterns/transitions/common-transitions.md`
-- `.claude/voice-profiles/[name].yaml`
+- `patterns/hooks/[file].md`
+- `patterns/structures/[file].md`
+- `patterns/transitions/common-transitions.md`
+- `voice-profiles/[name].yaml`
+- `index.md`
 
 ## The Compound Effect
-This piece adds [X] reusable patterns to your writing system.
-Next similar piece will benefit from: [specific improvements]
+This piece adds [N] reusable patterns to your writing system.
+
+**Next similar piece will benefit from**:
+- [Specific improvement 1]
+- [Specific improvement 2]
+- [Specific improvement 3]
 ```
 
-## Post-Compound Options
+---
 
-**Question**: "Compounding complete. [X] patterns extracted. What next?"
+## Step 11: Clear Session Scratchpad
 
-**Options**:
+```
+After compounding:
+1. Archive promoted entries
+2. Clear session-specific feedback
+3. Reset for next writing session
+```
+
+Keep only:
+- Unpromoted preferences
+- Context notes for next session
+
+---
+
+## Step 12: Post-Compound Options (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Compounding complete. [N] patterns extracted. What next?"
+
+Options:
 1. **View patterns** - Open the extracted pattern files
 2. **Start new piece** - `/writing:plan` with new patterns available
 3. **Review pattern library** - See all accumulated patterns
-4. **Export voice profile** - Save voice profile for sharing
-
-## Phase 6: Promote Scratchpad to Patterns
-
-### Persist Session Learnings
-From the scratchpad, promote recurring preferences to permanent patterns:
-
-```
-If preference appeared 3+ times in scratchpad:
-  - Extract to pattern library
-  - Add to voice profile
-  - Clear from scratchpad
+4. **Export voice profile** - Share voice profile
+5. **Done** - Finished for now
 ```
 
-### Update Knowledge Base
-Add to `.claude/writing-knowledge/`:
-- New patterns discovered
-- Voice profile refinements
-- Anti-patterns to avoid
-
-### Clear Session Scratchpad
-After compounding:
-- Archive scratchpad entries that were promoted
-- Keep only session-specific notes
-- Reset for next writing session
+---
 
 ## The Compound Loop
 
 ```
 Write → Feedback → Review → Edit → Compound →
-  ↓
-Scratchpad captures preferences
-  ↓
-Compound promotes patterns to knowledge
-  ↓
-Next piece starts with more patterns
-  ↓
+                                      ↓
+               Scratchpad captures session preferences
+                                      ↓
+               Compound extracts permanent patterns
+                                      ↓
+               Knowledge base grows with each piece
+                                      ↓
 Write (faster) → Review (fewer issues) → Edit (lighter) → Compound →
-  ↓
-Each cycle gets easier
+                                      ↓
+                    Each cycle gets easier
 ```
+
+---
+
+## Quality Checklist
+
+Before completing:
+- [ ] All draft versions analyzed
+- [ ] Scratchpad history reviewed
+- [ ] Success factors identified with user
+- [ ] Hook pattern extracted (if novel)
+- [ ] Structure template created (if novel)
+- [ ] Voice profile updated
+- [ ] Transitions documented
+- [ ] Anti-patterns logged
+- [ ] Recurring scratchpad preferences promoted
+- [ ] Knowledge base files updated
+- [ ] Compound report saved
+- [ ] Scratchpad cleared for next session

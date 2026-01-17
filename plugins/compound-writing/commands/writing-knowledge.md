@@ -1,7 +1,7 @@
 ---
 name: writing:knowledge
 description: Manage workspace knowledge - voice profiles, patterns, and reference materials
-argument-hint: "[add|search|list] [content or query]"
+argument-hint: "[search|add|list|import] [query or content]"
 ---
 
 # Writing Knowledge Command
@@ -12,9 +12,27 @@ Build and query your writing knowledge base - voice profiles, proven patterns, a
 
 <knowledge_input> #$ARGUMENTS </knowledge_input>
 
-Parse:
-- Action: `add`, `search`, `list`, `import`
-- Content: Query string or content to add
+**Input Types:**
+- `search "opening hooks for technical content"` → Query knowledge
+- `add pattern "The Callback Close..."` → Add new pattern
+- `list patterns` → Browse patterns
+- `list voice-profiles` → Browse voices
+- `import voice-profile samples/*.md` → Extract voice from samples
+
+---
+
+## Skills to Load
+
+```
+Skill: voice-capture
+  - Extract voice patterns from samples
+  - Build voice profiles
+
+Skill: scratchpad
+  - Connect session preferences to knowledge
+```
+
+---
 
 ## Knowledge Architecture
 
@@ -24,248 +42,461 @@ Parse:
 │   ├── kieran-blog.yaml
 │   └── company-formal.yaml
 ├── patterns/                 # Proven patterns
-│   ├── hooks/
-│   ├── structures/
-│   └── transitions/
+│   ├── hooks/               # Opening formulas
+│   ├── structures/          # Article templates
+│   ├── transitions/         # Flow techniques
+│   └── closings/            # Ending formulas
 ├── references/              # Source materials
 │   ├── style-guides/
 │   └── exemplars/
 └── index.md                 # Searchable index
 ```
 
-## Actions
+---
 
-### `search` - Find Relevant Knowledge
+## Action: `search`
 
-```bash
-/writing:knowledge search "opening hooks for technical content"
+**Usage:** `/writing:knowledge search "query"`
+
+### Step 1: Parse Query
+
+```
+Extract:
+- Keywords: [main terms]
+- Intent: [hooks/structure/voice/style/all]
+- Context: [if any specific context mentioned]
 ```
 
-**Process**:
-1. Search voice profiles for relevant traits
-2. Search patterns for matching techniques
-3. Search references for examples
-4. Rank by relevance and recency
+### Step 2: Search All Sources
 
-**Output**:
+```
+Search in parallel:
+1. Voice profiles → Relevant traits and guidance
+2. Patterns → Matching techniques
+3. References → Example excerpts
+4. Scratchpad → Session preferences that apply
+```
+
+### Step 3: Rank Results
+
+```
+Ranking factors:
+- Keyword match strength
+- Recency of creation/update
+- Usage count (if tracked)
+- Success rate (if tracked)
+```
+
+### Step 4: Present Results
+
 ```markdown
-## Knowledge Search: "opening hooks for technical content"
+## Knowledge Search: "[query]"
 
 ### Voice Profile Match
-**kieran-blog** recommends:
-- Lead with counterintuitive insight
-- Concrete before abstract
+**[profile-name]** recommends:
+- [Relevant guidance 1]
+- [Relevant guidance 2]
 
 ### Relevant Patterns
-**hook-stat-surprise** (used 12x, 89% positive feedback)
-> "Most developers spend 40% of their time..."
+**[pattern-name]** (used Xx, Y% positive)
+> "[Example or formula]"
+**When to use**: [context]
 
-**hook-question-challenge** (used 8x, 75% positive)
-> "What if everything you knew about X was wrong?"
+**[pattern-name-2]** (used Xx, Y% positive)
+> "[Example or formula]"
 
 ### Reference Examples
-From `exemplars/best-openings.md`:
-- [Example 1 with source]
-- [Example 2 with source]
+From `exemplars/[file].md`:
+- [Relevant excerpt with context]
+
+### Session Preferences
+From scratchpad:
+- [Any relevant current preferences]
 ```
 
-### `add` - Add New Knowledge
+### Step 5: Offer Next Steps (BRAINSTORM)
 
-```bash
-/writing:knowledge add pattern "The Callback Close - end by referencing the opening hook"
+```
+Use AskUserQuestion:
+
+Question: "Found [N] relevant results. What would you like to do?"
+
+Options:
+1. **Use [top pattern]** - Apply to current draft
+2. **Show more details** - Expand on specific result
+3. **Refine search** - Try different keywords
+4. **Add to current piece** - Insert pattern into outline/draft
 ```
 
-**Process**:
-1. Categorize the knowledge (pattern/voice/reference)
-2. Extract key attributes
-3. Add to appropriate location
-4. Update searchable index
+---
 
-### `list` - Browse Knowledge
+## Action: `add`
 
-```bash
-/writing:knowledge list patterns
-/writing:knowledge list voice-profiles
-/writing:knowledge list references
+**Usage:** `/writing:knowledge add [type] "[content]"`
+
+### Step 1: Determine Type
+
+| Command | Type | Destination |
+|---------|------|-------------|
+| `add pattern hooks "..."` | Hook pattern | patterns/hooks/ |
+| `add pattern structure "..."` | Structure | patterns/structures/ |
+| `add pattern transition "..."` | Transition | patterns/transitions/ |
+| `add voice-profile "..."` | Voice traits | voice-profiles/ |
+| `add reference "..."` | Reference material | references/ |
+
+### Step 2: Extract Attributes (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Adding new [type]. Let me capture the details:"
+
+Options for pattern:
+1. **Quick add** - Just save with basic metadata
+2. **Full documentation** - Add examples, when to use, variations
 ```
 
-### `import` - Import from External Source
+If full documentation:
+
+```
+Question: "When should this pattern be used?"
+
+Options:
+1. [Suggested context 1]
+2. [Suggested context 2]
+3. [Suggested context 3]
+4. Custom - Describe the context
+```
+
+### Step 3: Create Pattern File
+
+```markdown
+---
+title: "[Pattern Name]"
+type: [hook/structure/transition/closing]
+created: [timestamp]
+source: "manual"
+tags: [tag1, tag2]
+usage_count: 0
+success_rate: null
+---
+
+## Pattern
+
+[Description of the pattern]
+
+## Formula
+
+"[Pattern with placeholders]"
+
+## Example
+
+> [Concrete example]
+
+## When to Use
+
+- [Context 1]
+- [Context 2]
+
+## Variations
+
+- [Variation 1]
+- [Variation 2]
+```
+
+### Step 4: Update Index
+
+Append to `.claude/writing-knowledge/index.md`:
+
+```markdown
+### [Category]
+- **[pattern-name]**: [brief description] - [date added]
+```
+
+### Step 5: Confirm
+
+```markdown
+✓ Pattern added: [pattern-name]
+
+**Saved to**: [file path]
+**Tags**: [tags]
+**Searchable via**: "/writing:knowledge search [keywords]"
+```
+
+---
+
+## Action: `list`
+
+**Usage:** `/writing:knowledge list [category]`
+
+### Categories
+
+```
+/writing:knowledge list patterns      → All patterns
+/writing:knowledge list hooks         → Hook patterns only
+/writing:knowledge list structures    → Structure templates
+/writing:knowledge list voice-profiles → All voice profiles
+/writing:knowledge list references    → Reference materials
+/writing:knowledge list all           → Everything
+```
+
+### Output Format
+
+```markdown
+## [Category] ([count] items)
+
+### Most Used
+1. **[name]** - [description] - used [N]x
+2. **[name]** - [description] - used [N]x
+
+### Recently Added
+1. **[name]** - [description] - [date]
+2. **[name]** - [description] - [date]
+
+### By Tag
+**[tag]**: [pattern1], [pattern2]
+**[tag]**: [pattern3], [pattern4]
+```
+
+### Offer Actions (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Showing [N] [category]. What would you like to do?"
+
+Options:
+1. **View details** - Show full pattern for [top item]
+2. **Search within** - Filter by keyword
+3. **Edit** - Modify an existing pattern
+4. **Delete** - Remove outdated pattern
+5. **Done** - Exit
+```
+
+---
+
+## Action: `import`
+
+**Usage:** `/writing:knowledge import [type] [source]`
+
+### Import Voice Profile
 
 ```bash
-/writing:knowledge import voice-profile samples/writing-samples/*.md
+/writing:knowledge import voice-profile samples/my-best-posts/*.md
+```
+
+#### Step 1: Load Samples
+
+```
+Load skill: voice-capture
+
+Read all files matching the pattern
+Extract for each:
+- Word count
+- Sentence patterns
+- Vocabulary frequency
+- Tone markers
+```
+
+#### Step 2: Analyze Voice (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Analyzed [N] writing samples. I found these consistent patterns:
+
+**Vocabulary**: [findings]
+**Rhythm**: [findings]
+**Tone**: [findings]
+
+What should I call this voice profile?"
+
+Options:
+1. **[auto-suggested-name]** - Based on detected style
+2. **Custom name** - Enter your own
+```
+
+#### Step 3: Create Profile
+
+```yaml
+# .claude/writing-knowledge/voice-profiles/[name].yaml
+
+name: "[name]"
+created: [timestamp]
+source: "imported from [N] samples"
+
+traits:
+  vocabulary:
+    technical_level: [accessible/moderate/expert]
+    formality: [casual/professional/academic]
+    distinctive_words: [list]
+    prohibited: [list]
+
+  rhythm:
+    avg_sentence_length: [X] words
+    pattern: "[description]"
+    paragraph_length: [X] sentences
+
+  tone:
+    emotional_register: [warm/neutral/intense]
+    personality: [high/medium/low]
+    direct_address: [yes/no]
+    humor: [present/absent]
+
+channels:
+  blog: "[channel-specific guidance]"
+  newsletter: "[channel-specific guidance]"
+  social: "[channel-specific guidance]"
+
+exemplars:
+  - path: "[sample-1-path]"
+    why: "[what it demonstrates]"
+  - path: "[sample-2-path]"
+    why: "[what it demonstrates]"
+```
+
+#### Step 4: Confirm
+
+```markdown
+✓ Voice profile created: [name]
+
+**Based on**: [N] samples
+**Key traits**:
+- [trait 1]
+- [trait 2]
+- [trait 3]
+
+**Use with**: `/writing:draft` will now offer this voice
+**Edit**: `.claude/writing-knowledge/voice-profiles/[name].yaml`
+```
+
+### Import Patterns
+
+```bash
 /writing:knowledge import patterns competitor-analysis.md
 ```
+
+Extracts patterns from analysis documents and adds to pattern library.
+
+### Import References
+
+```bash
+/writing:knowledge import reference company-style-guide.pdf
+```
+
+Adds to references for use by style-checking agents.
+
+---
 
 ## Two-Level Knowledge System
 
 ### Level 1: Instant Access (Brief)
-Core facts loaded into every writing session:
+
+Loaded into every writing session automatically:
 - Active voice profile traits
-- Top 5 proven patterns
+- Top 5 proven patterns (by usage/success)
 - Key prohibitions
 
 ### Level 2: Deep Lookup (Search)
-Full knowledge base queried on demand:
+
+Queried on demand via `/writing:knowledge search`:
 - All pattern variations
 - Complete exemplar library
 - Historical feedback data
+- Full reference materials
 
-## Knowledge Index
-
-The index at `.claude/writing-knowledge/index.md`:
-
-```markdown
 ---
-updated: 2025-01-16
-profiles: 3
-patterns: 47
-references: 12
----
-
-# Writing Knowledge Index
-
-## Quick Stats
-- **Most used pattern**: hook-stat-surprise (34 uses)
-- **Best performing**: callback-close (94% positive)
-- **Active voice**: kieran-blog
-
-## Categories
-
-### Hooks (12 patterns)
-- hook-stat-surprise: Lead with surprising statistic
-- hook-question: Open with provocative question
-- hook-story: In media res narrative
-...
-
-### Structures (8 patterns)
-- structure-problem-solution: Classic persuasion arc
-- structure-listicle: Numbered insights
-...
-
-### Transitions (15 patterns)
-...
-
-### Closings (7 patterns)
-...
-
-## Voice Profiles
-- kieran-blog: Conversational, direct, technically-informed
-- company-formal: Professional, precise, authoritative
-- newsletter: Personal, warm, insight-forward
-```
 
 ## Integration with Commands
 
 ### /writing:plan
 ```
 Before planning:
-- Load Level 1 knowledge (brief)
-- Check for relevant patterns
-- Apply voice profile constraints
+1. Load Level 1 knowledge (brief)
+2. Check for relevant patterns for topic
+3. Apply voice profile constraints
 ```
 
 ### /writing:draft
 ```
 During drafting:
-- Query Level 2 for specific techniques
-- Match patterns to content type
-- Enforce voice profile rules
+1. Query Level 2 for specific techniques
+2. Match patterns to content type
+3. Enforce voice profile rules
 ```
 
 ### /writing:review
 ```
 During review:
-- Check against voice profile
-- Verify pattern usage
-- Flag knowledge violations
+1. Check against voice profile
+2. Verify pattern usage
+3. Flag knowledge violations
 ```
 
 ### /writing:compound
 ```
 After success:
-- Extract new patterns
-- Update index
-- Reinforce what worked
+1. Extract new patterns → add to knowledge
+2. Update pattern usage counts
+3. Reinforce what worked
 ```
+
+---
 
 ## Building Your Knowledge Base
 
 ### Start with Voice Profile
+
 ```bash
-# Capture your voice from samples
-/writing:knowledge import voice-profile my-best-posts/*.md
+# Capture voice from your best writing
+/writing:knowledge import voice-profile ~/blog/best-posts/*.md
 
 # Or define manually
 /writing:knowledge add voice-profile "direct, uses analogies, avoids jargon"
 ```
 
 ### Add Patterns as You Write
+
 ```bash
-# After a successful piece
-/writing:compound draft-final.md
+# After compounding a successful piece
+/writing:compound latest
 
 # Manually add a technique
 /writing:knowledge add pattern hooks "Start with the ending - reveal outcome first"
 ```
 
 ### Import References
+
 ```bash
 # Add style guides
 /writing:knowledge import reference company-style-guide.pdf
 
 # Add exemplars
-/writing:knowledge import exemplar best-blog-post.md "Great hook technique"
+/writing:knowledge import reference best-blog-post.md
 ```
 
-## Knowledge Queries
+---
 
-Natural language queries work:
+## Natural Language Queries
+
+These all work:
 
 ```bash
 /writing:knowledge search "how do I write better openings?"
 /writing:knowledge search "examples of data-driven hooks"
-/writing:knowledge search "what does kieran-blog voice sound like?"
+/writing:knowledge search "what does my blog voice sound like?"
 /writing:knowledge search "patterns for technical tutorials"
+/writing:knowledge search "transitions between sections"
 ```
 
-## Knowledge Lifecycle
+---
 
-```
-Write → Get Feedback → Compound → Knowledge grows
-   ↑                                    ↓
-   ←←←←← Future writing benefits ←←←←←←
-```
+## Quality Checklist
 
-Each successful piece adds to knowledge:
-- New patterns discovered
-- Voice profile refined
-- Feedback integrated
-
-## Example: Building Hook Knowledge
-
-```markdown
-## Pattern: hook-stat-surprise
-
-**Category**: hooks
-**Uses**: 34
-**Success Rate**: 89%
-
-**Formula**:
-"[Surprising statistic]. [Why it matters]. [What we'll explore]."
-
-**Examples**:
-1. "Developers spend 40% of their time debugging. That's 2 days a week lost. Here's how to cut it in half."
-2. "93% of written content never gets read past the headline. Yours doesn't have to be one of them."
-
-**When to use**:
-- Technical content
-- Persuasive pieces
-- Data-rich topics
-
-**Variations**:
-- Lead with the stat
-- Lead with the implication
-- Lead with the question the stat answers
-
-**Source**: Extracted from top-performing posts 2024-2025
-```
+Before completing:
+- [ ] Action correctly identified (search/add/list/import)
+- [ ] Knowledge type determined
+- [ ] Relevant sources searched/created
+- [ ] Results formatted clearly
+- [ ] Index updated (for add/import)
+- [ ] User offered relevant next steps

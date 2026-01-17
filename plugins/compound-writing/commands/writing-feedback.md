@@ -1,7 +1,7 @@
 ---
 name: writing:feedback
 description: Capture real-time feedback into scratchpad for iterative refinement
-argument-hint: "[draft ID or 'general'] [feedback text]"
+argument-hint: "[draft-ID or 'general'] [feedback text]"
 ---
 
 # Writing Feedback Command
@@ -12,60 +12,101 @@ Capture what works and what doesn't into a persistent scratchpad that guides fut
 
 <feedback_input> #$ARGUMENTS </feedback_input>
 
-Parse input:
-- First word: Draft ID (e.g., "draft-1", "3") or "general"
-- Rest: The feedback text
+**Input Format:**
+- `draft-2 love the opening hook` → Positive feedback on draft-2
+- `3 too formal` → Negative feedback on draft-3
+- `general prefer short sentences` → General preference
+- `draft-1 👍` → Quick thumbs up
+- `draft-2 👎 too corporate` → Quick thumbs down with reason
 
-## The Scratchpad System
+---
 
-The scratchpad is a persistent feedback log at `drafts/.scratchpad.md` that:
-- Tracks preferences marked as "good" or "bad"
-- Records specific draft feedback with IDs
-- Builds a profile of what resonates
-- Informs all future drafts in the session
+## Skills to Load
 
-## Workflow
+```
+Skill: scratchpad
+  - Preference profile structure
+  - Recency weighting
+  - Conflict detection
+```
 
-### Phase 1: Parse Feedback
+---
+
+## Step 1: Parse Input
 
 ```
 Extract from input:
-- target: Draft ID or "general"
-- sentiment: Detect if positive ("good", "love", "yes", "perfect")
-             or negative ("bad", "weak", "no", "wrong")
-- content: The actual feedback
+- target: Draft ID (e.g., "draft-2", "3") or "general"
+- feedback: The feedback text after the target
 - timestamp: Current time
 ```
 
-### Phase 2: Categorize Feedback
+---
 
-Analyze feedback for patterns:
+## Step 2: Detect Sentiment
 
-```markdown
-## Feedback Categories
+Analyze feedback for sentiment:
 
-### Voice & Tone
-- Too formal / too casual
-- Personality level
-- Emotional register
+| Signal Words | Sentiment |
+|-------------|-----------|
+| love, good, perfect, yes, great, 👍, ✓ | Positive |
+| bad, weak, wrong, no, hate, 👎, ✗ | Negative |
+| prefer, should, could, try | Suggestion |
+| ? | Question (needs clarification) |
 
-### Structure & Flow
-- Opening strength
-- Pacing issues
-- Transition problems
+---
 
-### Content & Substance
-- Missing examples
-- Weak claims
-- Good insights
+## Step 3: Categorize Feedback
 
-### Style & Language
-- Word choice
-- Sentence rhythm
-- Jargon level
+Determine which aspect of writing this affects:
+
+| Category | Examples |
+|----------|----------|
+| **Voice & Tone** | "too formal", "love the warmth", "sounds corporate" |
+| **Structure & Flow** | "opening is weak", "lost me in the middle", "perfect build-up" |
+| **Content & Substance** | "needs more examples", "love the stats", "too abstract" |
+| **Style & Language** | "jargon heavy", "punchy sentences work", "too long" |
+
+---
+
+## Step 4: Extract Principle
+
+Transform raw feedback into actionable principle:
+
+| Raw Feedback | Extracted Principle |
+|--------------|---------------------|
+| "draft-2's opening is too weak" | Openings need stronger hooks |
+| "love the stats in draft-1" | Data points resonate |
+| "too formal" | Prefer conversational tone |
+| "the gardening analogy was perfect" | Concrete analogies work |
+| "lost me in section 3" | Transitions need work |
+
+---
+
+## Step 5: Check for Conflicts
+
+If new feedback contradicts existing scratchpad entries:
+
+```
+Use AskUserQuestion:
+
+Question: "I'm seeing conflicting preferences:
+
+Previous: '[earlier feedback]' → [principle]
+Current: '[new feedback]' → [principle]
+
+Which should take priority?"
+
+Options:
+1. **New feedback wins** - Update preference to current
+2. **Keep previous** - This piece is an exception
+3. **Both are true** - Context-dependent, keep both with notes
+4. **Clarify** - Help me understand the nuance
 ```
 
-### Phase 3: Update Scratchpad
+---
+
+## Step 6: Update Scratchpad
 
 Append to `drafts/.scratchpad.md`:
 
@@ -73,57 +114,22 @@ Append to `drafts/.scratchpad.md`:
 ---
 ## Feedback Entry [timestamp]
 
-**Target**: [draft ID or general]
-**Sentiment**: [positive/negative/neutral]
+**Target**: [draft-ID or general]
+**Sentiment**: [positive/negative/suggestion]
 **Category**: [voice/structure/content/style]
+**Raw**: "[Original feedback text]"
 
-> [Original feedback text]
-
-**Extracted Principle**: [What this tells us about preferences]
+**Principle extracted**: [Actionable learning]
+**Strategy impact**: [Which strategies to prioritize/avoid]
 
 ---
 ```
 
-### Phase 4: Extract Principles
+---
 
-From feedback, extract actionable principles:
+## Step 7: Regenerate Preference Profile
 
-| Feedback | Principle |
-|----------|-----------|
-| "draft-2's opening is too weak" | Openings need stronger hooks |
-| "love the stats in draft-1" | Data points resonate |
-| "too formal" | Prefer conversational tone |
-| "the analogy about gardening was perfect" | Concrete analogies work |
-
-### Phase 5: Summarize Patterns
-
-After 3+ feedback entries, generate a preference summary:
-
-```markdown
-## Preference Profile (Auto-Generated)
-
-### What Works ✓
-- [Pattern 1 with example]
-- [Pattern 2 with example]
-
-### What Doesn't ✗
-- [Anti-pattern 1]
-- [Anti-pattern 2]
-
-### Voice Tendency
-- [Inferred voice preference]
-
-### Strategy Recommendations
-Based on feedback, prioritize these situational strategies:
-- [strategy-1]: Because [reason from feedback]
-- [strategy-2]: Because [reason from feedback]
-```
-
-## Output
-
-### Updated Scratchpad
-
-Save to `drafts/.scratchpad.md`:
+After 3+ entries, update the preference profile at top of scratchpad:
 
 ```markdown
 ---
@@ -133,123 +139,197 @@ entries: [count]
 
 # Writing Scratchpad
 
-## Preference Profile
+## Preference Profile (Auto-Generated)
 
 ### What Works ✓
-- Data and statistics resonate
-- Conversational tone preferred
-- Concrete examples > abstract concepts
+- [Pattern 1] - evidence: [draft-IDs]
+- [Pattern 2] - evidence: [draft-IDs]
 
 ### What Doesn't ✗
-- Overly formal language
-- Weak openings
-- Generic statements without proof
+- [Anti-pattern 1] - evidence: [draft-IDs]
+- [Anti-pattern 2] - evidence: [draft-IDs]
 
-## Recent Feedback
+### Voice Tendency
+Inferred preference: [description]
+Confidence: [high/medium/low based on consistency]
 
-[Most recent 10 entries]
+### Strategy Recommendations
+Based on [N] feedback entries:
+- Prioritize: [strategy-1], [strategy-2]
+- Avoid: [strategy-3]
+- Neutral: [strategy-4]
 
-## All Feedback Log
-
-[Complete history]
+### Conflicts Noted
+- [Any unresolved conflicts with context]
 ```
 
-### Confirmation
+---
+
+## Step 8: Confirm Capture
+
+Output confirmation:
 
 ```markdown
 ✓ Feedback captured for [target]
 
-**Extracted**: [principle]
+**Sentiment**: [positive/negative/suggestion]
 **Category**: [category]
-**Pattern count**: [N] entries
+**Principle**: [extracted principle]
 
-The scratchpad now reflects:
-- [Key preference 1]
-- [Key preference 2]
+**Scratchpad now has [N] entries:**
+- What Works ✓: [key patterns]
+- What Doesn't ✗: [key anti-patterns]
 
-Next drafts will incorporate these preferences.
+Next drafts will apply these preferences.
 ```
 
-## Quick Feedback Shortcuts
+---
+
+## Quick Shortcuts
 
 For fast feedback capture:
 
 ```bash
-# Mark something as good
+# Positive feedback
 /writing:feedback 2 good - love the opening hook
+/writing:feedback draft-1 👍
 
-# Mark something as bad
+# Negative feedback
 /writing:feedback 3 bad - too formal, sounds corporate
+/writing:feedback 2 👎 weak opening
 
-# General preference
+# General preferences
 /writing:feedback general prefer short punchy sentences
+/writing:feedback general always lead with data
 
-# Quick thumbs
-/writing:feedback 1 👍
-/writing:feedback 2 👎
+# Compare drafts
+/writing:feedback draft-2 better than draft-1, more concrete
 ```
+
+---
 
 ## Integration with Other Commands
 
 ### /writing:draft reads scratchpad
+
 ```
-Before creating drafts:
+Before creating new drafts:
 1. Load drafts/.scratchpad.md
 2. Extract preference profile
-3. Apply principles to strategy selection
-4. Weight recent feedback higher
+3. Apply "What Works ✓" patterns
+4. Avoid "What Doesn't ✗" anti-patterns
+5. Weight recent feedback higher
 ```
 
 ### /writing:review considers scratchpad
+
 ```
 During review:
 1. Check draft against scratchpad preferences
 2. Flag violations of "What Doesn't Work"
 3. Highlight alignment with "What Works"
+4. Add new learnings to scratchpad
 ```
 
-### /writing:compound updates patterns
+### /writing:compound promotes patterns
+
 ```
 When compounding:
-1. Merge scratchpad insights into pattern library
-2. Promote recurring preferences to permanent patterns
-3. Clear session-specific feedback
+1. Identify preferences with 3+ occurrences
+2. Promote to permanent pattern library
+3. Add to voice profile
+4. Clear promoted entries from scratchpad
 ```
+
+---
 
 ## Scratchpad Lifecycle
 
 ```
 Session Start
-    ↓
-/writing:feedback → Add entries
-    ↓
-/writing:draft → Read & apply
-    ↓
-/writing:feedback → Refine preferences
-    ↓
-/writing:draft → Better alignment
-    ↓
-/writing:compound → Persist to patterns
-    ↓
-Session End (scratchpad can persist or clear)
+    │
+    ▼
+┌───────────────────────────┐
+│ /writing:feedback         │◀──┐
+│ Add entry to scratchpad   │   │
+└─────────────┬─────────────┘   │
+              │                  │
+              ▼                  │
+┌───────────────────────────┐   │
+│ /writing:draft            │   │
+│ Read & apply preferences  │   │
+└─────────────┬─────────────┘   │
+              │                  │
+              ▼                  │
+       User reviews              │
+              │                  │
+              └──────────────────┘
+              │
+              ▼
+┌───────────────────────────┐
+│ /writing:compound         │
+│ Promote to pattern library│
+└───────────────────────────┘
 ```
 
-## Advanced: Preference Conflicts
+---
 
-When feedback seems contradictory:
+## Recency Weighting
 
-```markdown
-## Conflict Detected
+More recent feedback carries more weight:
 
-Entry 1: "too casual"
-Entry 5: "too formal"
+| Age | Weight | Meaning |
+|-----|--------|---------|
+| Current turn | 1.0 | Highest priority |
+| 1-3 turns ago | 0.8 | Still very relevant |
+| 4-6 turns ago | 0.5 | Consider but may be outdated |
+| 7+ turns ago | 0.3 | Background context only |
 
-**Resolution**: Ask user to clarify
-"I'm seeing mixed signals on formality. Entry 1 suggested more formal,
-but Entry 5 suggests more casual. What's the right balance for this piece?"
-```
+When preferences conflict, recency typically wins unless user specifies otherwise.
+
+---
 
 ## Example Session
 
 ```
-User: /writing:feedback 1 the opening stat really grabbed me
+Turn 1:
+  User: /writing:draft "AI in healthcare"
+  → Creates draft-1, draft-2, draft-3
+
+Turn 2:
+  User: /writing:feedback draft-1 love the stat opening
+  → Scratchpad: ✓ Statistical hooks resonate
+
+Turn 3:
+  User: /writing:feedback draft-3 too formal, sounds like a press release
+  → Scratchpad: ✗ Avoid formal/corporate tone
+
+Turn 4:
+  User: /writing:feedback general prefer conversational tone with data
+  → Scratchpad: ✓ Conversational + data-driven = winning combo
+
+Turn 5:
+  User: /writing:draft refine draft-1
+  → Reads scratchpad, applies: stat hook + conversational tone
+  → Avoids: formal language
+  → Creates refined draft-1
+
+Turn 6:
+  User: /writing:feedback draft-1 perfect, this is it
+  → Scratchpad: ✓ Confirmed: casual + data = success
+  → Ready for /writing:compound
+```
+
+---
+
+## Quality Checklist
+
+Before completing:
+- [ ] Input parsed correctly (target + feedback)
+- [ ] Sentiment detected accurately
+- [ ] Category assigned appropriately
+- [ ] Principle extracted (actionable, specific)
+- [ ] Conflicts checked and resolved
+- [ ] Scratchpad updated
+- [ ] Preference profile regenerated (if 3+ entries)
+- [ ] Confirmation shown to user

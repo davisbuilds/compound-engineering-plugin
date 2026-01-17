@@ -1,7 +1,7 @@
 ---
 name: writing:draft
 description: Transform an outline into prose following style preferences
-argument-hint: "[path to outline.md]"
+argument-hint: "[path to outline.md] or [refine draft-ID]"
 ---
 
 # Writing Draft Command
@@ -12,63 +12,148 @@ Execute an outline into prose, following style preferences and voice profiles.
 
 <outline_path> #$ARGUMENTS </outline_path>
 
-If the input is "refine [draft-ID]", enter REFINEMENT mode with that specific draft.
+**Input Types:**
+- `drafts/[slug]/outline.md` → EXPLORATION mode (create 3 drafts)
+- `refine draft-2` → REFINEMENT mode (improve specific draft)
+- `drafts/[slug]/` → Find outline in that directory
 
-## Workflow Overview
+---
 
-This command executes the **drafting phase**:
-1. Load outline and research
-2. Load applicable style guide
-3. Pre-draft checklist
-4. Section-by-section drafting with voice guardian loop
-5. Quality checkpoints
+## Skills to Load
 
-## Phase 1: Load Context
+Before starting, load these skills:
 
-### Read Context Notes
-If context notes were passed from `/writing:plan`, extract:
-- Research summary
-- Material available
-- Message clarity (thesis, audience, action)
-- Voice configuration
-- Mode (EXPLORATION or REFINEMENT)
+```
+Skill: writing-orchestration
+  - 10 baseline strategies (always apply)
+  - 20+ situational strategies (select 3-4)
+  - Quality checkpoints
 
-### Read Scratchpad
-Check `drafts/.scratchpad.md` for session preferences:
+Skill: scratchpad
+  - Session preference memory
+  - Recency weighting for feedback
+
+Skill: context-notes
+  - Read handoff from /writing:plan
+  - Output handoff for /writing:review
+
+Skill: [voice skill] - Load based on context:
+  - pragmatic-writing (technical content)
+  - dhh-writing (opinionated takes)
+  - every-style-editor (Every house style)
+  - [custom voice profile]
+```
+
+---
+
+## Step 1: Determine Mode
+
+| Input | Mode | Output |
+|-------|------|--------|
+| Outline path | EXPLORATION | 3 draft variations |
+| "refine draft-X" | REFINEMENT | 1 improved draft |
+
+---
+
+## Step 2: Load Context Notes
+
+Read handoff from `/writing:plan`:
+
+```
+If <context_notes> available:
+  Extract:
+  - Research summary
+  - Material available (examples, data, quotes)
+  - Message clarity (thesis, audience, action)
+  - Voice configuration
+  - Mode
+```
+
+---
+
+## Step 3: Load Scratchpad Preferences
+
+Check `drafts/.scratchpad.md`:
+
 ```
 If scratchpad exists:
-  - Load "What Works ✓" patterns
-  - Load "What Doesn't ✗" anti-patterns
-  - Apply recency weighting (recent feedback > older)
-  - Use preference profile to guide strategy selection
+  1. Load preference profile
+  2. Extract "What Works ✓" patterns
+  3. Extract "What Doesn't ✗" anti-patterns
+  4. Apply recency weighting (newer feedback > older)
+  5. Note any conflicts to address
 ```
 
-### Read Outline and Research
+---
+
+## Step 4: Load Outline and Research
+
 ```
-Read the outline file at [outline_path]
-Read associated research.md and sources.md in same directory
+Read:
+- drafts/[slug]/outline.md
+- drafts/[slug]/research.md
+- drafts/[slug]/sources.md
+- drafts/[slug]/brief.md (if exists)
+
 Extract:
-- The thesis/argument
-- The hook
+- Hook (opening text)
 - Section structure
 - Source requirements per section
+- Target word count
 ```
 
-### Load Style Guide
-Check for applicable style:
+---
 
-1. **Check for voice profile**: `.claude/voice-profiles/[name].yaml`
-2. **Check for style skill**: `every-style-editor`, `dhh-writing`, `pragmatic-writing`
-3. **Ask if none found**: "Which style should I use? (Every style, DHH style, Pragmatic style, or provide custom)"
+## Step 5: Select Voice (BRAINSTORM if needed)
 
-### Extract Channel Guidance
-Based on outline metadata or ask:
-- Blog: longer form, storytelling allowed
-- Newsletter: personality forward, direct address okay
-- Social: punchy, hooks required
-- Documentation: clear, step-by-step, minimal personality
+**If voice profile specified in context notes:** Load it.
 
-## Phase 2: Pre-Draft Checklist
+**If NO voice profile found:**
+
+```
+Use AskUserQuestion:
+
+Question: "Which voice/style should I use for this piece?"
+
+Options:
+1. **Pragmatic** - Clear, technical, Hunt/Thomas style
+2. **DHH** - Direct, opinionated, punchy
+3. **Every** - Professional, warm, insight-forward
+4. **Conversational** - Friendly, accessible, uses "you"
+5. **Infer from outline** - Match the tone of the outline
+```
+
+---
+
+## Step 6: Select Situational Strategies (BRAINSTORM)
+
+Load baseline strategies (always apply all 10).
+
+Then select situational strategies:
+
+```
+Use AskUserQuestion:
+
+Question: "Which techniques should I emphasize? (Select 2-3)"
+
+Options (multiSelect: true):
+1. **Strong hooks** - Counterintuitive openings, tension builders
+2. **Concrete examples** - Show don't tell, sensory details
+3. **Data-driven** - Statistics, research citations
+4. **Story elements** - Narrative arc, dialogue, scenes
+5. **Persuasion** - Social proof, objection handling
+```
+
+Map selections to strategies:
+- Strong hooks → `hook-effectiveness`, `tension-builder`, `pattern-twist`
+- Concrete examples → `ladder-abstraction`, `show-and-tell`, `name-of-dog`
+- Data-driven → `source-integration`, `stat-framing`
+- Story elements → `narrate-scenes`, `dialogue-compression`, `reveal-traits`
+- Persuasion → `objection-bridge`, `social-proof`, `build-to-ask`
+
+---
+
+## Step 7: Pre-Draft Checklist
 
 Before writing any prose, verify:
 
@@ -76,27 +161,43 @@ Before writing any prose, verify:
 - [ ] **Each section has clear purpose** - Know what each must accomplish
 - [ ] **Sources are sufficient** - Every claim can be supported
 - [ ] **Voice is defined** - Know the style to match
+- [ ] **Scratchpad preferences loaded** - Will honor feedback
 
-If any fail, return to `/writing:plan` to address.
+**If any fail:**
 
-## Phase 3: Section-by-Section Drafting
+```
+Use AskUserQuestion:
+
+Question: "Pre-flight check failed: [issue]. What should we do?"
+
+Options:
+1. "Return to /writing:plan" - Address the gap
+2. "Proceed anyway" - Note the issue and continue
+3. "Clarify now" - Answer inline
+```
+
+---
+
+## Step 8: Section-by-Section Drafting
 
 ### The Producer-Critic Loop
 
-For each section, use iterative voice-guardian feedback:
+For each section in the outline:
 
 ```
 Loop for each section:
   1. Draft the section following:
-     - Outline beats
-     - Style guide rules
-     - Baseline strategies (short sentences, active voice, concrete examples)
+     - Outline beats and key points
+     - Selected strategies
+     - Voice profile rules
+     - Scratchpad preferences
 
   2. Run voice-guardian check:
      Task voice-guardian: "Check this section against voice profile:
-     [section text]
-     Voice profile: [profile details]
-     Return score (0-100) and specific fixes needed."
+     Section: [section text]
+     Voice: [profile name]
+     Scratchpad: [key preferences]
+     Return: Score (0-100) and specific fixes."
 
   3. If score < 85:
      - Apply suggested fixes
@@ -106,74 +207,93 @@ Loop for each section:
      - Move to next section
 ```
 
-### Baseline Writing Strategies
+### Apply Baseline Strategies
 
-Apply these to all content:
-- **Short sentences**: Average 15-20 words
-- **Active voice**: Subject does the action
-- **Concrete examples**: Show, don't tell
-- **One idea per paragraph**: No cramming
-- **Strong verbs**: Avoid "is", "was", "has"
+For ALL content:
 
-### Situational Strategies
+| Strategy | Check |
+|----------|-------|
+| `reader-zero-context` | Unfamiliar terms have 3-6 word orienting phrases |
+| `subject-verb` | Subject + verb in first 5 words |
+| `activate-verbs` | Precise verbs, minimal is/was/has |
+| `watch-adverbs` | Strong verbs carry the load |
+| `limit-ings` | Simple tense over continuous |
+| `prefer-simple` | Everyday language unless technical |
+| `cut-big-small` | Edit hierarchically |
+| `ban-empty-hypophora` | No self-answered questions |
+| `present-active-tense` | Direct, immediate language |
+| `one-idea-per-sentence` | Single clear point per sentence |
 
-Apply based on context:
+---
 
-**For technical content**:
-- Concrete before abstract
-- Physical analogies for concepts
-- Code examples where helpful
+## Step 9: Create Draft Variations (EXPLORATION mode)
 
-**For persuasive content**:
-- Acknowledge objections
-- Use social proof
-- Build to the ask
+If EXPLORATION mode, create 3 distinct drafts:
 
-**For storytelling**:
-- Sensory details
-- Dialogue where appropriate
-- Tension and release
-
-## Phase 4: Draft Assembly
-
-### Combine Sections
-```markdown
-# [Title]
-
-[Hook - opening 50 words]
-
-[Section 1]
-
-[Section 2]
-
-...
-
-[Conclusion with CTA]
+```
+Draft 1 (draft-[N]): [Angle 1 - e.g., story-forward]
+Draft 2 (draft-[N+1]): [Angle 2 - e.g., data-forward]
+Draft 3 (draft-[N+2]): [Angle 3 - e.g., contrarian]
 ```
 
-### Quality Checkpoints
+Each draft should:
+- Follow the same outline structure
+- Use the same sources
+- Vary the APPROACH, not just words:
+  - Different opening hooks
+  - Different example emphasis
+  - Different tonal register
 
-Verify before saving:
+---
+
+## Step 10: Quality Checkpoints
+
+Before saving, verify each draft:
+
 - [ ] Opening hooks within first 50 words
 - [ ] No paragraph over 4 sentences
 - [ ] Concrete example in each major section
-- [ ] All claims have sources
+- [ ] All claims have sources cited
 - [ ] Clear CTA at end
 - [ ] Overall voice score ≥ 85
+- [ ] Scratchpad preferences honored
 
-## Output
+---
 
-Save draft to: `drafts/[slug]/draft-v1.md`
+## Step 11: Save Drafts
+
+For EXPLORATION mode:
+
+```
+drafts/[slug]/
+├── draft-[N].md      # Draft 1
+├── draft-[N+1].md    # Draft 2
+└── draft-[N+2].md    # Draft 3
+```
+
+For REFINEMENT mode:
+
+```
+drafts/[slug]/
+└── draft-[ID].md     # Updated (keeps same ID)
+```
+
+**Draft metadata:**
 
 ```markdown
 ---
+draft_id: "draft-[N]"
 title: "[Title]"
 version: 1
+angle: "[Angle description]"
 style: "[style used]"
 voice_score: [final score]
 word_count: [count]
 reading_time: "[X] minutes"
 created: [timestamp]
+strategies_applied:
+  baseline: "all 10"
+  situational: ["strategy-1", "strategy-2", "strategy-3"]
 ---
 
 [Draft content]
@@ -182,79 +302,130 @@ created: [timestamp]
 
 ## Draft Notes
 - Sources used: [list]
-- Style guide applied: [name]
-- Voice profile: [name or "none"]
+- Scratchpad preferences applied: [list]
+- Known weaknesses: [any identified issues]
 ```
 
-## Post-Draft Options
+---
 
-After creating draft, use AskUserQuestion:
-
-**Question**: "Draft ready at `drafts/[slug]/draft-v1.md` ([X] words, voice score: [Y]). What next?"
-
-**Options**:
-1. **Run editorial review** - `/writing:review drafts/[slug]/draft-v1.md`
-2. **Tighten/edit manually** - Open draft for hands-on editing
-3. **Generate variations** - Create 2 more drafts with different angles
-4. **Quick style check** - Run clarity-editor pass only
-
-## Common Issues
-
-### Voice Score Won't Reach 85
-- Review voice profile - may be too strict
-- Check if content type matches voice
-- Consider adjusting profile for this piece
-
-### Draft Feels Flat
-- Add more concrete examples
-- Strengthen the opening hook
-- Vary sentence length more
-- Add tension or stakes
-
-### Too Long/Too Short
-- Review outline section estimates
-- Cut less essential sections for shorter
-- Expand examples for longer
-
-## Draft ID Management
-
-Every draft gets a unique, persistent ID:
+## Step 12: Draft ID Management
 
 ```
-Response 1: draft-1, draft-2, draft-3  (exploration)
-Response 2: draft-4, draft-5, draft-6  (new exploration)
-Response 3: draft-2 refined            (keeps original ID)
+Session tracking:
+- First exploration: draft-1, draft-2, draft-3
+- Second exploration: draft-4, draft-5, draft-6
+- Refinement of draft-2: draft-2 (keeps ID, version increments)
 ```
 
+Rules:
 - IDs persist across the session
-- Never reuse IDs
+- NEVER reuse IDs
 - Refinements keep original draft ID
-- New explorations increment
+- New explorations always increment
 
-## Context Notes Output
+---
 
-After creating drafts, output context notes for handoff:
+## Step 13: Output Context Notes
+
+Generate handoff for `/writing:review`:
 
 ```markdown
 <context_notes>
 ## Draft Status
-- Version: [draft-v1]
-- Word count: [count]
-- Voice score: [score] (target: 85)
-- Drafts created: [count] (user selected: [ID if applicable])
+- Drafts created: draft-[N], draft-[N+1], draft-[N+2]
+- Word counts: [X], [Y], [Z]
+- Voice scores: [X], [Y], [Z] (target: 85)
 
 ## Strategies Applied
 - Baseline: All 10 applied
 - Situational: [strategy-1], [strategy-2], [strategy-3]
 
 ## Known Issues
-- [Any identified weaknesses]
+- [Any identified weaknesses per draft]
 
 ## Scratchpad Summary
-- ✓ [Preference applied from scratchpad]
-- ✗ [Anti-pattern avoided from scratchpad]
+- ✓ Applied: [preferences honored]
+- ✗ Avoided: [anti-patterns avoided]
 
 ## Mode
-[EXPLORATION or REFINEMENT]
+EXPLORATION
+
+## Recommended Next
+User should review drafts and provide feedback via /writing:feedback
 </context_notes>
 ```
+
+---
+
+## Step 14: Present Options (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "3 drafts ready. Which resonates most?"
+
+Options:
+1. **draft-[N]**: [Angle 1 summary] - [word count] words
+2. **draft-[N+1]**: [Angle 2 summary] - [word count] words
+3. **draft-[N+2]**: [Angle 3 summary] - [word count] words
+4. **Show all** - Display all 3 for comparison
+5. **None** - Try different angles
+```
+
+After selection:
+
+```
+Use AskUserQuestion:
+
+Question: "What next with [selected draft]?"
+
+Options:
+1. **Run editorial review** - `/writing:review [draft-ID]`
+2. **Quick feedback** - Mark what works/doesn't
+3. **Refine this draft** - Make specific improvements
+4. **Generate more variations** - Create 3 more options
+```
+
+---
+
+## Common Issues
+
+### Voice Score Won't Reach 85
+
+```
+Use AskUserQuestion:
+
+Question: "Voice score stuck at [X]. The profile may be too strict. What should we do?"
+
+Options:
+1. "Lower the bar" - Accept 75+ for this piece
+2. "Identify blockers" - Show what's causing drift
+3. "Switch voice" - Try a different profile
+```
+
+### Scratchpad Conflicts
+
+```
+Use AskUserQuestion:
+
+Question: "Conflicting preferences in scratchpad: [conflict]. Which takes priority?"
+
+Options:
+1. "[Preference A]" - Recent feedback
+2. "[Preference B]" - Earlier feedback
+3. "Find middle ground" - Balance both
+```
+
+---
+
+## Quality Checklist
+
+Before completing:
+- [ ] Mode correctly identified (EXPLORATION vs REFINEMENT)
+- [ ] Voice profile loaded and applied
+- [ ] Scratchpad preferences honored
+- [ ] All 10 baseline strategies applied
+- [ ] 3-4 situational strategies visible
+- [ ] Each draft has unique angle (not just word changes)
+- [ ] Draft IDs assigned and tracked
+- [ ] Context notes ready for handoff

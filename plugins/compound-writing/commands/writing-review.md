@@ -1,7 +1,7 @@
 ---
 name: writing:review
 description: Exhaustive parallel editorial review of written content
-argument-hint: "[path to draft.md or 'latest']"
+argument-hint: "[path to draft.md] or [draft-ID] or 'latest'"
 ---
 
 # Writing Review Command
@@ -12,129 +12,243 @@ Multi-agent editorial review that examines content from every angle.
 
 <draft_path> #$ARGUMENTS </draft_path>
 
-If "latest" is provided, find the most recent draft in `drafts/`.
+**Input Types:**
+- `drafts/[slug]/draft-1.md` → Review specific file
+- `draft-2` → Find and review draft with that ID
+- `latest` → Find most recent draft in `drafts/`
 
-## Workflow Overview
+---
 
-This command executes the **review phase**:
-1. Load draft and context
-2. Launch parallel review agents
-3. Collect and prioritize findings
-4. Present interactive triage
-5. Apply accepted fixes
+## Skills to Load
 
-## Phase 1: Load Context
+Before starting, load these skills:
 
-### Read Draft
 ```
-Read the draft file
+Skill: writing-orchestration
+  - Quality checkpoints
+  - Strategy verification
+
+Skill: scratchpad
+  - Read session preferences
+  - Update with review learnings
+
+Skill: context-notes
+  - Read handoff from /writing:draft
+  - Output handoff for revision
+
+Skill: [style guide] - Based on draft metadata:
+  - every-style-editor (Every content)
+  - pragmatic-writing (technical content)
+  - dhh-writing (opinionated content)
+```
+
+---
+
+## Step 1: Locate Draft
+
+```
+If input is file path:
+  Load that file
+
+If input is draft ID (e.g., "draft-2"):
+  Search drafts/ for matching draft_id in frontmatter
+
+If input is "latest":
+  Find most recently modified .md in drafts/
+```
+
+---
+
+## Step 2: Load Draft Context
+
+Extract from draft file:
+
+```
+From frontmatter:
+- draft_id
+- title
+- version
+- style/voice used
+- voice_score (current)
+- word_count
+- strategies_applied
+
+From content:
+- Full draft text
+- Section structure
+```
+
+---
+
+## Step 3: Load Context Notes
+
+If context notes from `/writing:draft` available:
+
+```
 Extract:
-- Title and metadata
-- Word count
-- Style used
-- Voice profile (if any)
-- Draft ID (e.g., draft-2)
+- Strategies that were applied
+- Known issues already identified
+- Scratchpad preferences used
 ```
 
-### Read Context Notes
-If context notes were passed from `/writing:draft`:
-- Load strategies applied
-- Check known issues
-- Load scratchpad summary
+---
 
-### Read Scratchpad
-Check `drafts/.scratchpad.md` for session preferences:
+## Step 4: Load Scratchpad
+
+Check `drafts/.scratchpad.md`:
+
 ```
 If scratchpad exists:
-  - Load preference profile
-  - Use "What Works ✓" to validate draft alignment
-  - Flag "What Doesn't ✗" violations as issues
+  1. Load preference profile
+  2. "What Works ✓" → Validate draft alignment
+  3. "What Doesn't ✗" → Flag violations as issues
 ```
 
-### Load Review Context
+---
+
+## Step 5: Load Review Context
+
 ```
-If voice profile exists: Load for voice-guardian
-If style guide specified: Load rules
-Find sources.md for fact-checking
+Load for agents:
+- Voice profile (if specified)
+- Style guide rules
+- Sources.md (for fact-checking)
+- Research.md (for completeness checking)
 ```
 
-## Phase 2: Parallel Review Agents
+---
 
-Launch ALL relevant agents simultaneously:
+## Step 6: Select Review Depth (BRAINSTORM)
 
-### Core Reviews (Always Run)
+```
+Use AskUserQuestion:
+
+Question: "How thorough should this review be?"
+
+Options:
+1. **Quick pass** - Voice + clarity only (fastest)
+2. **Standard review** - Voice + clarity + facts + structure
+3. **Deep review** - All agents + publishing optimization
+4. **Custom** - Select specific agents
+```
+
+If "Custom" selected:
+
+```
+Use AskUserQuestion:
+
+Question: "Which review agents should I run? (Select all that apply)"
+
+Options (multiSelect: true):
+1. **Voice Guardian** - Voice consistency and drift
+2. **Clarity Editor** - Clarity, concision, jargon
+3. **Fact Checker** - Verify claims against sources
+4. **Structure Architect** - Flow and organization
+5. **Publishing Optimizer** - SEO and social hooks
+6. **Style Guide** - [Detected style] compliance
+```
+
+---
+
+## Step 7: Launch Parallel Review Agents
+
+Run selected agents simultaneously:
+
+### Core Reviews
 
 ```
 Task voice-guardian: "Check voice consistency in this draft.
-Voice profile: [profile or 'infer from content']
+Voice profile: [profile or 'infer']
 Draft: [draft content]
-Return: Voice score, drift areas, specific fixes."
+Scratchpad preferences: [key preferences]
+Return:
+- Voice score (0-100)
+- Drift areas with line numbers
+- Specific fixes with before/after"
 
-Task clarity-editor: "Review for clarity, concision, jargon, and passive voice.
+Task clarity-editor: "Review for clarity, concision, and accessibility.
 Draft: [draft content]
+Check for:
+- Passive voice instances
+- Unnecessary jargon
+- Redundant phrases
+- Unclear sentences
 Return: Prioritized issues with before/after fixes."
 
 Task fact-checker: "Verify all claims against sources.
 Draft: [draft content]
 Sources: [sources.md content]
-Return: Claim verification report."
+Return:
+- Verified claims ✓
+- Unverified claims ?
+- Incorrect claims ✗
+- Suggestions for each"
 
 Task structure-architect: "Analyze flow and structure.
 Draft: [draft content]
-Return: Flow analysis, gap identification, structure assessment."
+Outline: [original outline if available]
+Return:
+- Flow analysis
+- Gap identification
+- Pacing assessment
+- Structure score"
 ```
 
 ### Style Reviews (Based on Context)
 
+```
 If using Every style:
-```
-Task every-style-editor: "Check against Every's style guide.
-Draft: [draft content]
-Return: Style violations with line numbers and fixes."
-```
+  Task every-style-editor: "Check against Every's style guide.
+  Draft: [draft content]
+  Return: Violations with line numbers and fixes."
 
 If technical content:
-```
-Skill: pragmatic-writing
-Apply pragmatic writing principles and report issues.
-```
+  Skill: pragmatic-writing
+  Apply pragmatic principles, report issues.
 
-If opinion/persuasive content:
-```
-Skill: dhh-writing
-Apply DHH's direct, opinionated style checks.
+If opinion/persuasive:
+  Skill: dhh-writing
+  Apply DHH style checks, report issues.
 ```
 
 ### Publishing Reviews (If Requested)
 
 ```
-Task publishing-optimizer: "Analyze for SEO and social potential.
+Task publishing-optimizer: "Analyze for discoverability and engagement.
 Draft: [draft content]
-Return: SEO recommendations, social hooks, headline alternatives."
+Return:
+- SEO recommendations
+- Social media hooks (3-5 options)
+- Headline alternatives (5 options)
+- Newsletter subject lines (3 options)"
 ```
 
-## Phase 3: Collect and Prioritize Findings
+**Wait for all agents to complete.**
+
+---
+
+## Step 8: Collect and Prioritize Findings
 
 ### Categorize Issues
 
 ```markdown
 ## Review Summary
 
-### Critical (Must Fix)
+### 🔴 Critical (Must Fix)
 Issues that significantly harm the piece:
 - Factual errors
 - Unsupported claims
 - Major clarity problems
 - Structural gaps
 
-### Important (Should Fix)
+### 🟡 Important (Should Fix)
 Issues that noticeably weaken the piece:
 - Voice drift
 - Passive voice
 - Unnecessary jargon
 - Flow problems
 
-### Polish (Nice to Fix)
+### 🟢 Polish (Nice to Fix)
 Minor improvements:
 - Word choice refinements
 - Rhythm adjustments
@@ -142,148 +256,193 @@ Minor improvements:
 ```
 
 ### Deduplicate
-Multiple agents may flag the same issue. Combine duplicates and note agreement:
+
+If multiple agents flag the same issue, combine and note agreement:
+
 ```
 "Passive voice in paragraph 3" - flagged by: clarity-editor, voice-guardian
+(Higher confidence when multiple agents agree)
 ```
 
-## Phase 4: Interactive Triage
-
-Present each issue with options:
-
-```markdown
 ---
 
-**[Critical]** Unsupported claim in paragraph 3
+## Step 9: Interactive Triage (BRAINSTORM)
 
-> "Studies show that 73% of developers prefer..."
+Present issues one by one:
 
-No source provided for this statistic.
+### For Critical Issues
 
-**Suggested fix**: Add citation or remove claim.
+```
+Use AskUserQuestion:
 
-What would you like to do?
-1. Accept fix (add citation placeholder)
-2. Skip (keep as is)
-3. Custom (provide your fix)
-4. Remove claim entirely
+Question: "[Critical] Unsupported claim in paragraph 3:
+> 'Studies show that 73% of developers prefer...'
+No source provided. What should we do?"
 
----
+Options:
+1. **Add citation** - Insert [citation needed] placeholder
+2. **Remove claim** - Delete the unsupported statement
+3. **Rephrase** - Soften to opinion ("Many developers prefer...")
+4. **Skip** - Keep as is (explain why)
+```
 
-**[Important]** Passive voice: 4 instances detected
+### For Important Issues
 
+```
+Use AskUserQuestion:
+
+Question: "[Important] Passive voice: 4 instances detected.
 Lines: 12, 34, 56, 78
+Example: 'The code was written' → 'The developer wrote the code'
+What should we do?"
 
-**Suggested fixes**:
-- "The code was written" → "The developer wrote the code"
-- "It was decided" → "We decided"
-- [etc.]
-
-What would you like to do?
-1. Accept all
-2. Accept some (show each)
-3. Skip all
-4. Custom
-
----
+Options:
+1. **Accept all** - Fix all 4 instances
+2. **Review each** - Show me one by one
+3. **Skip all** - Intentional stylistic choice
+4. **Accept some** - Fix specific lines only
 ```
 
-### Track Decisions
+### For Polish Issues
+
+```
+Use AskUserQuestion:
+
+Question: "[Polish] 3 minor style guide issues found. Review them?"
+
+Options:
+1. **Accept all** - Apply all fixes
+2. **Review each** - Show me one by one
+3. **Skip all** - Good enough
+```
+
+---
+
+## Step 10: Track Decisions
+
+Build triage log:
+
 ```markdown
 ## Triage Log
-- Issue 1: Accepted
-- Issue 2: Skipped (reason: intentional stylistic choice)
-- Issue 3: Custom fix applied
+
+| Issue | Category | Decision | Reason |
+|-------|----------|----------|--------|
+| Unsupported claim P3 | Critical | Removed | No source available |
+| Passive voice ×4 | Important | Fixed 3/4 | Line 56 intentional |
+| Oxford comma | Polish | Skipped | Style preference |
 ```
 
-## Phase 5: Apply Fixes
+---
+
+## Step 11: Apply Fixes
 
 ### Create New Version
-After triage, apply all accepted fixes:
-- Create `draft-v2.md` (or increment version)
-- Preserve original
-- Log all changes
+
+```
+After triage:
+1. Apply all accepted fixes
+2. Create draft-v[N+1].md (increment version)
+3. Preserve original (never overwrite)
+4. Log all changes in metadata
+```
 
 ### Re-Run Critical Checks
+
+```
 After fixes applied:
-- Fact-check any new claims added
-- Voice-guardian quick check on changed sections
-- Verify no new issues introduced
+1. Voice-guardian quick check on changed sections
+2. Fact-check any new claims added
+3. Verify no new issues introduced
+```
 
-## Output
+---
 
-### Review Report
-Save to `drafts/[slug]/review-v1.md`:
+## Step 12: Save Review Report
+
+Create `drafts/[slug]/review-v[N].md`:
 
 ```markdown
 # Editorial Review: [Title]
 
+**Draft reviewed**: draft-[ID] v[version]
+**Review date**: [timestamp]
+**Review depth**: [quick/standard/deep]
+
 ## Summary
-- Issues found: X
-- Critical: X
-- Important: X
-- Polish: X
+- Issues found: [total]
+- Critical: [count] → [fixed/remaining]
+- Important: [count] → [fixed/remaining]
+- Polish: [count] → [fixed/remaining]
+- Voice score: [before] → [after]
 
 ## Agent Reports
 
 ### Voice Guardian
-[Full report]
+**Score**: [X]/100
+**Issues**: [list]
+**Fixes applied**: [list]
 
 ### Clarity Editor
-[Full report]
+**Issues**: [list]
+**Fixes applied**: [list]
 
 ### Fact Checker
-[Full report]
+**Verified**: [count]
+**Flagged**: [count]
 
 ### Structure Architect
-[Full report]
+**Flow score**: [X]/100
+**Gaps identified**: [list]
 
 ## Triage Decisions
-[Log of all decisions]
+[Full triage log]
+
+## Changes Made
+[Diff or change list]
+
+## Remaining Items
+- [ ] [Any skipped issues]
+- [ ] [Follow-up needed]
 
 ## Next Steps
-- [ ] Address remaining skipped issues
+- [ ] Address remaining issues
 - [ ] Final proofread
-- [ ] Prepare for publishing
+- [ ] Ready for /writing:compound
 ```
 
-### Updated Draft
-If fixes were applied, save `draft-v2.md` with:
-- Updated content
-- Change log in metadata
-- New voice score
+---
 
-## Post-Review Options
+## Step 13: Update Scratchpad
 
-**Question**: "Review complete. [X] issues found, [Y] fixed. What next?"
+If new preferences emerged during triage:
 
-**Options**:
-1. **View full report** - Show detailed review-v1.md
-2. **Run another review pass** - Re-run with fresh eyes
-3. **Prepare for publishing** - `/writing:compound` to capture patterns
-4. **Make manual edits** - Open draft for hands-on refinement
-5. **Publish** - Move to publishing workflow
+```
+Append to drafts/.scratchpad.md:
 
-## Quality Gates
+---
+## Review Learnings [timestamp]
 
-Review is complete when:
-- [ ] All critical issues addressed
-- [ ] Voice score ≥ 85
-- [ ] All claims verified or flagged
-- [ ] Flow analysis passed
-- [ ] Style guide compliance checked
-- [ ] Scratchpad preferences honored
+**New preference identified**:
+- [Preference from triage decision]
 
-## Context Notes Output
+**Anti-pattern confirmed**:
+- [Issue type to avoid in future]
+---
+```
 
-After review, output context notes for handoff to revision:
+---
+
+## Step 14: Output Context Notes
+
+Generate handoff for revision or compound:
 
 ```markdown
 <context_notes>
 ## Review Summary
-- Critical issues: [count]
-- Important issues: [count]
-- Polish issues: [count]
+- Critical issues: [count fixed / count remaining]
+- Important issues: [count fixed / count remaining]
+- Polish issues: [count fixed / count remaining]
+- Voice score: [before] → [after]
 
 ## Accepted Fixes
 1. [Fix 1 description]
@@ -293,10 +452,60 @@ After review, output context notes for handoff to revision:
 1. [Rejected fix with reason]
 
 ## Scratchpad Updates
-- New preference learned: [if applicable]
-- Conflict detected: [if applicable]
+- New preference: [if applicable]
+- Conflict resolved: [if applicable]
+
+## Draft Status
+- Version: draft-[ID] v[new version]
+- Ready for: [/writing:compound or more revision]
 
 ## Mode
-REFINEMENT (working on [draft-ID])
+REFINEMENT (working on draft-[ID])
 </context_notes>
 ```
+
+---
+
+## Step 15: Post-Review Options (BRAINSTORM)
+
+```
+Use AskUserQuestion:
+
+Question: "Review complete. [X] issues found, [Y] fixed. Voice score: [before]→[after]. What next?"
+
+Options:
+1. **View full report** - Open review-v[N].md
+2. **Another review pass** - Re-run with fresh perspective
+3. **Refine further** - `/writing:draft refine draft-[ID]`
+4. **Compound** - `/writing:compound draft-[ID]` (capture patterns)
+5. **Done** - Ready to publish
+```
+
+---
+
+## Quality Gates
+
+Review is complete when:
+- [ ] All critical issues addressed
+- [ ] Voice score ≥ 85
+- [ ] All claims verified or explicitly flagged
+- [ ] Flow analysis passed
+- [ ] Style guide compliance checked
+- [ ] Scratchpad preferences honored
+- [ ] Triage decisions logged
+- [ ] Context notes ready for handoff
+
+---
+
+## Quality Checklist
+
+Before completing:
+- [ ] Draft located and loaded
+- [ ] Appropriate agents selected for content type
+- [ ] All selected agents completed
+- [ ] Issues properly categorized (critical/important/polish)
+- [ ] Each issue triaged with user input
+- [ ] Fixes applied to new version (original preserved)
+- [ ] Review report saved
+- [ ] Scratchpad updated with learnings
+- [ ] Context notes ready for next command
