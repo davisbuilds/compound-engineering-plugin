@@ -227,6 +227,41 @@ Return:
 
 ---
 
+## Step 7.5: Run Vale Linting (If Installed)
+
+Run the Vale linting script from the every-style-editor skill:
+
+```bash
+# Run Vale lint using the skill's script
+bash ${CLAUDE_PLUGIN_ROOT}/skills/editing/every-style-editor/scripts/lint.sh [draft-path]
+```
+
+The script will:
+- Check if Vale is installed (prompt to install if not)
+- Run all Every style rules against the draft
+- Output issues with line numbers and severity
+
+### Integrate Vale Findings
+
+If Vale was run, include its output in the review:
+
+```markdown
+### Automated Style Checks (Vale)
+
+| Line | Level | Rule | Issue |
+|------|-------|------|-------|
+| 15 | error | EmDash | Em dashes should not have spaces around them |
+| 23 | warning | OverusedWords | Avoid overusing 'actually' |
+| 45 | warning | PassiveVoice | Passive voice detected |
+```
+
+Vale findings feed into the priority categorization:
+- `error` → Critical (Must Fix)
+- `warning` → Important (Should Fix)
+- `suggestion` → Polish (Nice to Fix)
+
+---
+
 ## Step 8: Collect and Prioritize Findings
 
 ### Categorize Issues

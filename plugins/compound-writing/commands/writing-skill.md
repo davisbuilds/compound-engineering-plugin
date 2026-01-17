@@ -424,6 +424,95 @@ It's about better hours.
 
 ---
 
+## Step 5.5: Add Vale Linting (Optional)
+
+**MANDATORY: Use the AskUserQuestion tool here. Do NOT output options as plain text.**
+
+```yaml
+tool: AskUserQuestion
+question: "Would you like to add Vale linting rules for this skill?"
+header: "Vale"
+options:
+  - label: "Yes, create Vale rules"
+    description: "Generate YAML linting rules based on the skill's style guide"
+  - label: "No, skip Vale"
+    description: "Don't create linting rules"
+```
+
+### If Yes: Create Vale Rules
+
+For voice and editing skills, extract key patterns and create Vale rules:
+
+**Directory structure:**
+```
+skills/[type]/[name]/
+├── SKILL.md
+├── references/
+└── vale/                    # NEW
+    └── [SkillName]/
+        ├── OverusedWords.yml
+        ├── Avoid.yml
+        └── [other rules].yml
+```
+
+**Common Vale rule types to generate:**
+
+1. **Existence rules** - Flag words/phrases to avoid:
+```yaml
+# vale/[SkillName]/Avoid.yml
+extends: existence
+message: "Avoid '%s' in this voice."
+level: warning
+ignorecase: true
+tokens:
+  - [word1]
+  - [word2]
+```
+
+2. **Substitution rules** - Replace phrases:
+```yaml
+# vale/[SkillName]/Substitutions.yml
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: warning
+swap:
+  'bad phrase': 'good phrase'
+```
+
+**Extract rules from skill's anti-patterns:**
+- Read the skill's "Anti-Patterns" or "Avoid" section
+- Convert each anti-pattern to a Vale rule
+- Use the skill's reasoning in the `message` field
+
+**Create lint script:**
+```bash
+# skills/[type]/[name]/scripts/lint.sh
+#!/bin/bash
+# Lint text against [name] style
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VALE_DIR="$SCRIPT_DIR/../vale"
+
+if ! command -v vale &> /dev/null; then
+    echo "Vale not installed. Install with: brew install vale"
+    exit 1
+fi
+
+vale --config="$VALE_DIR/.vale.ini" "$@"
+```
+
+**Create .vale.ini for the skill:**
+```ini
+# skills/[type]/[name]/vale/.vale.ini
+StylesPath = .
+MinAlertLevel = suggestion
+
+[*.md]
+BasedOnStyles = [SkillName]
+```
+
+---
+
 ## Step 6: Update Documentation
 
 ```
