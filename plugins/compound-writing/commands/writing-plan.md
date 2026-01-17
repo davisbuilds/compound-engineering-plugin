@@ -108,91 +108,137 @@ Options:
 
 ---
 
-## Step 3: Load Knowledge Context
+## Step 3: Search Your Library (ALWAYS DO THIS)
 
-Check for existing knowledge:
+Your past work is your best resource. Search local files first:
 
+### 3a. Search Past Writing
+
+```bash
+# Search drafts/ for similar topics
+grep -ri "[keywords from topic]" drafts/ --include="*.md"
+
+# Search published/ if it exists
+grep -ri "[keywords from topic]" published/ --include="*.md"
+
+# Check .claude/writing-knowledge/pieces/ for past work
+ls .claude/writing-knowledge/pieces/
 ```
-1. Check .claude/writing-knowledge/ for:
-   - Voice profile to use
-   - Relevant patterns for this topic
-   - Past pieces on similar topics
 
-2. If voice profile found:
-   Load profile into context
+**If relevant past pieces found:**
+- Read them for voice, structure, hooks that worked
+- Note reusable elements
+- Check if this is a sequel/follow-up opportunity
 
-3. If patterns found:
-   Load top 3 relevant patterns
+### 3b. Load Patterns Library
+
+```bash
+# Check patterns you've captured
+ls .claude/writing-knowledge/patterns/
+cat .claude/writing-knowledge/patterns/hooks/*.md
+cat .claude/writing-knowledge/patterns/structures/*.md
+```
+
+**Or check plugin patterns:**
+```bash
+ls docs/patterns/
+```
+
+**If patterns found for this topic type:**
+- Load top 3 relevant patterns
+- Note hook formulas that match
+- Check structure templates
+
+### 3c. Load Voice Profile
+
+```bash
+# Check available voice profiles
+ls .claude/writing-knowledge/voices/
+```
+
+**If voice profile exists:**
+- Load the profile
+- Note key traits, prohibited words, rhythm patterns
+
+### 3d. Check Scratchpad
+
+```bash
+cat drafts/.scratchpad.md
+```
+
+**Load any session preferences** from scratchpad.
+
+### 3e. Summarize Local Research
+
+```markdown
+## From Your Library
+
+**Past pieces on similar topics:**
+- [piece 1] - [what's reusable]
+- [piece 2] - [what's reusable]
+
+**Patterns to use:**
+- Hook: [pattern name]
+- Structure: [pattern name]
+
+**Voice profile:** [profile name or "infer from samples"]
+
+**Scratchpad preferences:**
+- [preference 1]
+- [preference 2]
 ```
 
 ---
 
-## Step 4: Research Options (BRAINSTORM)
+## Step 4: External Research (OPTIONAL)
 
 **MANDATORY: Use the AskUserQuestion tool here. Do NOT output options as plain text.**
 
-Most original writing doesn't need web research. Ask first:
+Your library is loaded. Do you need anything from outside?
 
 ```yaml
 tool: AskUserQuestion
-question: "Do you need external research for this piece, or is it based on your own knowledge/experience?"
-header: "Research"
+question: "I found [X] relevant pieces in your library. Do you need any external research?"
+header: "Web Research"
 multiSelect: true
 options:
-  - label: "No research needed"
-    description: "Writing from personal experience or existing knowledge"
-  - label: "Find supporting data/stats"
-    description: "Back up claims with external sources"
-  - label: "Check what's been written"
-    description: "See competitor angles to differentiate"
-  - label: "Deep research"
-    description: "Full research package (sources, audience, competitors)"
+  - label: "No, use my library"
+    description: "I have everything I need from past work"
+  - label: "Find supporting stats"
+    description: "Back up specific claims with external data"
+  - label: "Check competitors"
+    description: "See what others have written on this"
+  - label: "Deep web research"
+    description: "Full external research package"
 ```
 
 Based on selection:
 
-**If "No research needed":**
+**If "No, use my library":**
 - Skip to Step 5 (Two-Gate Assessment)
-- Note in sources.md: "Original content - no external sources"
+- Note in sources.md: "Original content - library sources only"
 
-**If "Find supporting data/stats":**
+**If "Find supporting stats":**
 ```
 Use AskUserQuestion:
 
-Question: "What specific claims or topics need supporting data?"
+Question: "What specific claims need external data?"
 Options:
 1. [Inferred from topic]
-2. [Alternative area]
+2. [Alternative claim]
 3. Other - Describe what you need
 ```
 
-Then run targeted search:
+Then run targeted web search only for that specific data.
+
+**If "Check competitors":**
 ```
-Task source-researcher: "Find supporting data for: [specific topic]
-Looking for:
-- Statistics with citations
-- Research studies
-- Expert quotes
-Return: 3-5 specific sources with quotes."
+Task source-researcher: "Find top 3-5 existing pieces on: [topic]
+Focus on: angles, gaps, differentiation opportunities"
 ```
 
-**If "Check what's been written":**
-```
-Task source-researcher: "Analyze existing content on: [topic]
-Find:
-- Top 3-5 existing pieces
-- Their angles and gaps
-- Differentiation opportunities
-Return: Brief competitive landscape."
-```
-
-**If "Deep research":**
-Run all three research agents in parallel:
-```
-Task source-researcher: "Research PRIMARY SOURCES for: [topic]..."
-Task source-researcher: "Analyze TARGET AUDIENCE for: [topic]..."
-Task source-researcher: "Analyze COMPETITOR CONTENT for: [topic]..."
-```
+**If "Deep web research":**
+Run full research agents (sources, audience, competitors).
 
 **Wait for any selected research to complete before proceeding.**
 

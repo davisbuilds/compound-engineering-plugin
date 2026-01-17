@@ -98,19 +98,49 @@ Options:
 Based on selections, create:
 
 ```bash
-# Core knowledge directories
-mkdir -p .claude/writing-knowledge/voice-profiles
-mkdir -p .claude/writing-knowledge/patterns/hooks
-mkdir -p .claude/writing-knowledge/patterns/structures
-mkdir -p .claude/writing-knowledge/patterns/transitions
-mkdir -p .claude/writing-knowledge/references
+# Core knowledge directories - YOUR LIBRARY
+mkdir -p .claude/writing-knowledge/voices          # Voice profiles
+mkdir -p .claude/writing-knowledge/patterns/hooks  # Hook formulas that work
+mkdir -p .claude/writing-knowledge/patterns/structures  # Article structures
+mkdir -p .claude/writing-knowledge/patterns/transitions # Transition phrases
+mkdir -p .claude/writing-knowledge/pieces          # Past published work (for reference)
+mkdir -p .claude/writing-knowledge/references      # External sources you cite often
 
 # Draft workspace (based on selection)
 mkdir -p drafts
 
+# Optional: published pieces archive
+mkdir -p published
+
 # Create empty tracking files
 touch drafts/.scratchpad.md
 touch drafts/.context.md
+```
+
+### Your Library Explained
+
+```
+.claude/writing-knowledge/
+├── voices/          # Voice profiles (YAML) - your writing styles
+│   └── my-blog.yaml
+├── patterns/        # Reusable patterns captured from wins
+│   ├── hooks/       # Opening formulas that worked
+│   ├── structures/  # Article templates
+│   └── transitions/ # Phrases that flow
+├── pieces/          # Past published work (copy here for reference)
+│   └── my-great-post.md
+└── references/      # External sources you cite often
+    └── favorite-quotes.md
+
+drafts/              # Active work
+├── .scratchpad.md   # Session preferences
+├── .context.md      # Cross-command context
+└── [slug]/          # Per-piece folders
+    ├── outline.md
+    ├── draft-v1.md
+    └── sources.md
+
+published/           # Archive of finished work (for /writing:plan to search)
 ```
 
 ### Initialize Scratchpad
