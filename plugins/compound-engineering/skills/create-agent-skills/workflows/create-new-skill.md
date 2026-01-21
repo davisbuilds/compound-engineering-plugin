@@ -52,7 +52,7 @@ Options:
 If research requested:
 - Use Context7 MCP to fetch current library documentation
 - Or use WebSearch for recent API documentation
-- Focus on 2024-2025 sources
+- Focus on 2024-2026 sources
 - Store findings for use in content generation
 
 ## Step 3: Decide Structure

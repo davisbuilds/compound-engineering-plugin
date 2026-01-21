@@ -20,6 +20,18 @@ Transform feature descriptions, bug reports, or improvement ideas into well-stru
 
 Do not proceed until you have a clear feature description from the user.
 
+### 0. Idea Refinement
+
+Before running research, refine the idea through collaborative dialogue using the **AskUserQuestion tool**:
+
+- Ask questions one at a time to understand the idea fully
+- Prefer multiple choice questions when natural options exist
+- Focus on understanding: purpose, constraints and success criteria
+- Continue until the idea is clear OR user says "proceed"
+
+**Skip option:** If the feature description is already detailed, offer:
+"Your description is clear. Should I proceed with research, or would you like to refine it further?"
+
 ## Main Tasks
 
 ### 1. Repository Research & Context Gathering
@@ -40,6 +52,14 @@ Runn these three agents in paralel at the same time:
 - [ ] Include URLs to external documentation and best practices guides
 - [ ] Create a reference list of similar issues or PRs (e.g., `#123`, `#456`)
 - [ ] Note any team conventions discovered in `CLAUDE.md` or team documentation
+
+### Research Validation (Optional)
+
+After research agents complete, briefly validate alignment:
+
+- Summarize key findings from research
+- Ask if anything looks off or is missing
+- User can confirm or request additional research on specific topics
 
 ### 2. Issue Planning & Structure
 

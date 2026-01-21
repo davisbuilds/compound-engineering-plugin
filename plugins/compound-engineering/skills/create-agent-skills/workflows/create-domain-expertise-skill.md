@@ -94,7 +94,7 @@ Each workflow = one complete task type that users actually do.
 Run multiple web searches to ensure coverage:
 
 **Search 1: Current ecosystem**
-- "best {domain} libraries 2024 2025"
+- "best {domain} libraries 2024 2025 2026"
 - "popular {domain} frameworks comparison"
 - "{domain} tech stack recommendations"
 
@@ -466,7 +466,7 @@ Ask: "Could a user build a professional {domain thing} from scratch through ship
 - [ ] Platform-specific considerations included?
 - [ ] "When to use X vs Y" guidance provided?
 - [ ] Common pitfalls documented?
-- [ ] Current as of 2024-2025?
+- [ ] Current as of 2024-2026?
 - [ ] Workflows actually execute tasks (not just reference knowledge)?
 - [ ] Each workflow specifies which references to read?
 
@@ -564,7 +564,7 @@ Review entire skill:
 Domain expertise skill is complete when:
 
 - [ ] Comprehensive research completed (5+ web searches)
-- [ ] All sources verified for currency (2024-2025)
+- [ ] All sources verified for recency (2024-2026)
 - [ ] Knowledge organized by domain areas (not arbitrary)
 - [ ] Essential principles in SKILL.md (always loaded)
 - [ ] Intake routes to appropriate workflows

@@ -8,7 +8,7 @@ argument-hint: "[path to plan file]"
 
 ## Introduction
 
-**Note: The current year is 2025.** Use this when searching for recent documentation and best practices.
+**Note: The current year is 2026.** Use this when searching for recent documentation and best practices.
 
 This command takes an existing plan (from `/workflows:plan`) and enhances each section with parallel research agents. Each major element gets its own dedicated research sub-agent to find:
 - Best practices and industry patterns
@@ -293,7 +293,7 @@ mcp__plugin_compound-engineering_context7__query-docs: Query documentation for s
 
 **Use WebSearch for current best practices:**
 
-Search for recent (2024-2025) articles, blog posts, and documentation on topics in the plan.
+Search for recent (2024-2026) articles, blog posts, and documentation on topics in the plan.
 
 ### 5. Discover and Run ALL Review Agents
 

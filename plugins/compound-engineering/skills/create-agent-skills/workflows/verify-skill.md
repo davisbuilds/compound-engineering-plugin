@@ -108,7 +108,7 @@ Check:
 ### For Integration Skills
 WebSearch for recent changes:
 ```
-"[service name] API changes 2025"
+"[service name] API changes 2026"
 "[service name] breaking changes"
 "[service name] deprecated endpoints"
 ```
@@ -188,9 +188,9 @@ which {tool} && {tool} --version
 ```
 
 **WebSearch patterns:**
-- Breaking changes: "{service} breaking changes 2025"
+- Breaking changes: "{service} breaking changes 2026"
 - Deprecations: "{service} deprecated API"
-- Current best practices: "{framework} best practices 2025"
+- Current best practices: "{framework} best practices 2026"
 </verification_shortcuts>
 
 <success_criteria>
