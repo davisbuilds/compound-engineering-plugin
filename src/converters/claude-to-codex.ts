@@ -38,7 +38,9 @@ export function convertClaudeToCodex(
 
 function convertAgent(agent: ClaudeAgent, usedNames: Set<string>): CodexGeneratedSkill {
   const name = uniqueName(normalizeName(agent.name), usedNames)
-  const description = agent.description ?? `Converted from Claude agent ${agent.name}`
+  const description = sanitizeDescription(
+    agent.description ?? `Converted from Claude agent ${agent.name}`,
+  )
   const frontmatter: Record<string, unknown> = { name, description }
 
   let body = agent.body.trim()
@@ -58,7 +60,9 @@ function convertCommandSkill(command: ClaudeCommand, usedNames: Set<string>): Co
   const name = uniqueName(normalizeName(command.name), usedNames)
   const frontmatter: Record<string, unknown> = {
     name,
-    description: command.description ?? `Converted from Claude command ${command.name}`,
+    description: sanitizeDescription(
+      command.description ?? `Converted from Claude command ${command.name}`,
+    ),
   }
   const sections: string[] = []
   if (command.argumentHint) {
@@ -94,6 +98,15 @@ function normalizeName(value: string): string {
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
   return normalized || "item"
+}
+
+function sanitizeDescription(value: string, maxLength = 1024): string {
+  const trimmed = value.trim()
+  if (trimmed.length <= maxLength) return trimmed
+  const normalized = trimmed.replace(/\\s+/g, " ")
+  if (normalized.length <= maxLength) return normalized
+  const ellipsis = "..."
+  return normalized.slice(0, Math.max(0, maxLength - ellipsis.length)).trimEnd() + ellipsis
 }
 
 function uniqueName(base: string, used: Set<string>): string {

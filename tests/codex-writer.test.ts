@@ -53,4 +53,24 @@ describe("writeCodexBundle", () => {
     expect(config).toContain("url = \"https://example.com/mcp\"")
     expect(config).toContain("http_headers")
   })
+
+  test("writes directly into a .codex output root", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-home-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const bundle: CodexBundle = {
+      prompts: [{ name: "command-one", content: "Prompt content" }],
+      skillDirs: [
+        {
+          name: "skill-one",
+          sourceDir: path.join(import.meta.dir, "fixtures", "sample-plugin", "skills", "skill-one"),
+        },
+      ],
+      generatedSkills: [],
+    }
+
+    await writeCodexBundle(codexRoot, bundle)
+
+    expect(await exists(path.join(codexRoot, "prompts", "command-one.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "skill-one", "SKILL.md"))).toBe(true)
+  })
 })

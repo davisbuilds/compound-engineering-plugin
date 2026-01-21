@@ -4,7 +4,7 @@ import type { CodexBundle } from "../types/codex"
 import type { ClaudeMcpServer } from "../types/claude"
 
 export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle): Promise<void> {
-  const codexRoot = path.join(outputRoot, ".codex")
+  const codexRoot = resolveCodexRoot(outputRoot)
   await ensureDir(codexRoot)
 
   if (bundle.prompts.length > 0) {
@@ -32,6 +32,10 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
   if (config) {
     await writeText(path.join(codexRoot, "config.toml"), config)
   }
+}
+
+function resolveCodexRoot(outputRoot: string): string {
+  return path.basename(outputRoot) === ".codex" ? outputRoot : path.join(outputRoot, ".codex")
 }
 
 export function renderCodexConfig(mcpServers?: Record<string, ClaudeMcpServer>): string | null {

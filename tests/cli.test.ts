@@ -105,6 +105,41 @@ describe("CLI", () => {
     expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
   })
 
+  test("convert supports --codex-home for codex output", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-codex-home-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      "src/index.ts",
+      "convert",
+      fixtureRoot,
+      "--to",
+      "codex",
+      "--codex-home",
+      codexRoot,
+    ], {
+      cwd: path.join(import.meta.dir, ".."),
+      stdout: "pipe",
+      stderr: "pipe",
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Converted sample-plugin")
+    expect(stdout).toContain(codexRoot)
+    expect(await exists(path.join(codexRoot, "prompts", "command-one.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "command-one", "SKILL.md"))).toBe(true)
+  })
+
   test("install supports --also with codex output", async () => {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-also-"))
     const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
@@ -138,6 +173,7 @@ describe("CLI", () => {
     expect(stdout).toContain("Installed sample-plugin")
     expect(stdout).toContain(path.join(tempRoot, "codex"))
     expect(await exists(path.join(tempRoot, "codex", ".codex", "prompts", "command-one.md"))).toBe(true)
+    expect(await exists(path.join(tempRoot, "codex", ".codex", "skills", "command-one", "SKILL.md"))).toBe(true)
     expect(await exists(path.join(tempRoot, "codex", ".codex", "skills", "skill-one", "SKILL.md"))).toBe(true)
   })
 })

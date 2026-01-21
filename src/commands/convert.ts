@@ -1,4 +1,5 @@
 import { defineCommand } from "citty"
+import os from "os"
 import path from "path"
 import { loadClaudePlugin } from "../parsers/claude"
 import { targets } from "../targets"
@@ -27,6 +28,11 @@ export default defineCommand({
       alias: "o",
       default: ".",
       description: "Output directory (project root)",
+    },
+    codexHome: {
+      type: "string",
+      alias: "codex-home",
+      description: "Write Codex output to this .codex root (ex: ~/.codex)",
     },
     also: {
       type: "string",
@@ -66,6 +72,7 @@ export default defineCommand({
 
     const plugin = await loadClaudePlugin(String(args.source))
     const outputRoot = path.resolve(String(args.output))
+    const codexHome = resolveCodexHome(args.codexHome)
 
     const options = {
       agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
@@ -73,13 +80,14 @@ export default defineCommand({
       permissions: permissions as PermissionMode,
     }
 
+    const primaryOutputRoot = targetName === "codex" && codexHome ? codexHome : outputRoot
     const bundle = target.convert(plugin, options)
     if (!bundle) {
       throw new Error(`Target ${targetName} did not return a bundle.`)
     }
 
-    await target.write(outputRoot, bundle)
-    console.log(`Converted ${plugin.manifest.name} to ${targetName} at ${outputRoot}`)
+    await target.write(primaryOutputRoot, bundle)
+    console.log(`Converted ${plugin.manifest.name} to ${targetName} at ${primaryOutputRoot}`)
 
     const extraTargets = parseExtraTargets(args.also)
     for (const extra of extraTargets) {
@@ -97,7 +105,9 @@ export default defineCommand({
         console.warn(`Skipping ${extra}: no output returned.`)
         continue
       }
-      const extraRoot = path.join(outputRoot, extra)
+      const extraRoot = extra === "codex" && codexHome
+        ? codexHome
+        : path.join(outputRoot, extra)
       await handler.write(extraRoot, extraBundle)
       console.log(`Converted ${plugin.manifest.name} to ${extra} at ${extraRoot}`)
     }
@@ -110,4 +120,20 @@ function parseExtraTargets(value: unknown): string[] {
     .split(",")
     .map((entry) => entry.trim())
     .filter(Boolean)
+}
+
+function resolveCodexHome(value: unknown): string | null {
+  if (!value) return null
+  const raw = String(value).trim()
+  if (!raw) return null
+  const expanded = expandHome(raw)
+  return path.resolve(expanded)
+}
+
+function expandHome(value: string): string {
+  if (value === "~") return os.homedir()
+  if (value.startsWith(`~${path.sep}`)) {
+    return path.join(os.homedir(), value.slice(2))
+  }
+  return value
 }

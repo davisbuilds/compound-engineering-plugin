@@ -88,4 +88,33 @@ describe("convertClaudeToCodex", () => {
     expect(bundle.mcpServers?.local?.command).toBe("echo")
     expect(bundle.mcpServers?.local?.args).toEqual(["hello"])
   })
+
+  test("truncates generated skill descriptions to 1024 chars", () => {
+    const longDescription = "a".repeat(1100)
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [
+        {
+          name: "Long Description Agent",
+          description: longDescription,
+          body: "Body",
+          sourcePath: "/tmp/plugin/agents/long.md",
+        },
+      ],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToCodex(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const generated = bundle.generatedSkills[0]
+    const parsed = parseFrontmatter(generated.content)
+    const description = String(parsed.data.description ?? "")
+    expect(description.length).toBeLessThanOrEqual(1024)
+    expect(description.endsWith("...")).toBe(true)
+  })
 })
