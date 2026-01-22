@@ -9,26 +9,24 @@ A Claude Code plugin marketplace featuring the **Compound Engineering Plugin** â
 /plugin install compound-engineering
 ```
 
-## OpenCode conversion CLI
+## OpenCode + Codex support (experimental)
 
 This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode and Codex.
-Both provider targets are experimental and may change as the formats evolve.
 
 ```bash
-bun install
-
 # list local plugins
-bun run src/index.ts list
+bunx @every-env/compound-plugin list
 
 # convert the compound-engineering plugin into OpenCode format
-bun run src/index.ts install compound-engineering --to opencode --output .
+bunx @every-env/compound-plugin install compound-engineering --to opencode --output .
 
 # convert to Codex format
-bun run src/index.ts install compound-engineering --to codex --output .
+bunx @every-env/compound-plugin install compound-engineering --to codex --output .
 ```
 
 Converted output is written to `opencode.json` plus `.opencode/agents` (and `.opencode/skills`).
 `install` defaults the output root to `~/.opencode` unless you pass `--output`.
+Both provider targets are experimental and may change as the formats evolve.
 Codex output is written to `.codex/prompts` and `.codex/skills`, with each Claude command converted into both a prompt and a skill (the prompt instructs Codex to load the corresponding skill). Generated Codex skill descriptions are truncated to 1024 characters (Codex limit).
 To install prompts/skills globally for `/prompts:<name>` and `/skills`, pass `--codex-home ~/.codex`.
 
