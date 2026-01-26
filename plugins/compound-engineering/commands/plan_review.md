@@ -8,30 +8,46 @@ argument-hint: "[plan file path or plan content]"
 
 Review a plan using configured agents from `.claude/compound-engineering.json`.
 
-## Load Configuration
+## Load Configuration (Auto-Setup if Missing)
 
 <config_loading>
 
-Check for configuration file:
+**Step 1: Check for configuration file:**
 
 ```bash
-# Check project config first, then global
-if [ -f .claude/compound-engineering.json ]; then
-  CONFIG_FILE=".claude/compound-engineering.json"
-elif [ -f ~/.claude/compound-engineering.json ]; then
-  CONFIG_FILE="~/.claude/compound-engineering.json"
-else
-  CONFIG_FILE=""
-fi
+test -f .claude/compound-engineering.json && echo "project" || \
+test -f ~/.claude/compound-engineering.json && echo "global" || echo "none"
 ```
 
-**If config exists:** Read `planReviewAgents` array from the config file.
+**Step 2: If config exists** → Read `planReviewAgents` array and proceed.
 
-**If no config exists:** Use these defaults:
-- `code-simplicity-reviewer`
-- `architecture-strategist`
+**Step 3: If NO config exists** → Run inline quick setup:
 
-Or prompt: "No configuration found. Run `/compound-engineering-setup` to configure agents, or use defaults?"
+```
+AskUserQuestion:
+  questions:
+    - question: "No agent configuration found. How would you like to configure plan review agents?"
+      header: "Quick Setup"
+      options:
+        - label: "Quick Setup - Use smart defaults (Recommended)"
+          description: "Auto-detect project type and use appropriate agents."
+        - label: "Full Setup - Customize everything"
+          description: "Run /compound-engineering-setup for detailed configuration."
+        - label: "Skip - Use defaults just this once"
+          description: "Use general defaults for this review only."
+```
+
+**If "Quick Setup":**
+1. Detect project type
+2. Create `.claude/compound-engineering.json` with smart defaults
+3. Continue with plan review using new config
+
+**If "Full Setup":**
+1. Run `/compound-engineering-setup`
+2. After setup, continue with plan review
+
+**If "Skip":**
+1. Use defaults: `code-simplicity-reviewer`, `architecture-strategist`
 
 </config_loading>
 

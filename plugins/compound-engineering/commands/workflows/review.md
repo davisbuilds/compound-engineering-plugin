@@ -48,30 +48,49 @@ Ensure that the code is ready for analysis (either in worktree or on current bra
 
 </task_list>
 
-#### Load Review Configuration
+#### Load Review Configuration (Auto-Setup if Missing)
 
 <config_loading>
 
-Check for configuration file:
+**Step 1: Check for configuration file:**
 
 ```bash
 # Check project config first, then global
-if [ -f .claude/compound-engineering.json ]; then
-  CONFIG_FILE=".claude/compound-engineering.json"
-elif [ -f ~/.claude/compound-engineering.json ]; then
-  CONFIG_FILE="~/.claude/compound-engineering.json"
-else
-  CONFIG_FILE=""
-fi
+test -f .claude/compound-engineering.json && echo "project" || \
+test -f ~/.claude/compound-engineering.json && echo "global" || echo "none"
 ```
 
-**If config exists:** Read agents from the configuration:
-- `reviewAgents` - Primary agents to run on every PR
-- `conditionalAgents` - Agents triggered by file patterns
-- `options.agentNative` - Whether to include agent-native-reviewer
+**Step 2: If config exists** → Read agents from configuration and proceed.
 
-**If no config exists:** Prompt user:
-> "No configuration found. Run `/compound-engineering-setup` to configure agents, or use defaults for this review?"
+**Step 3: If NO config exists** → Run inline quick setup:
+
+```
+AskUserQuestion:
+  questions:
+    - question: "No agent configuration found. How would you like to configure review agents?"
+      header: "Quick Setup"
+      options:
+        - label: "Quick Setup - Use smart defaults (Recommended)"
+          description: "Auto-detect project type and use appropriate agents. Takes 5 seconds."
+        - label: "Full Setup - Customize everything"
+          description: "Run /compound-engineering-setup for detailed configuration."
+        - label: "Skip - Use defaults just this once"
+          description: "Use general defaults for this review only, don't save config."
+```
+
+**If "Quick Setup":**
+1. Detect project type (check for Gemfile+Rails, package.json+tsconfig, etc.)
+2. Create `.claude/compound-engineering.json` with smart defaults for detected type
+3. Inform user: "Created config for {project_type}. Run `/compound-engineering-setup` anytime to customize."
+4. Continue with review using new config
+
+**If "Full Setup":**
+1. Run `/compound-engineering-setup` (the full interactive flow)
+2. After setup completes, continue with review
+
+**If "Skip":**
+1. Use general defaults for this review only
+2. Don't create config file
 
 </config_loading>
 
