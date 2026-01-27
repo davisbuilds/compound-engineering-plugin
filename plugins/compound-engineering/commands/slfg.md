@@ -4,554 +4,290 @@ description: Swarm-based autonomous engineering workflow with parallel agents
 argument-hint: "[feature description]"
 ---
 
-# Swarm LFG - Full Autonomous Engineering with Parallel Agents
+# Swarm LFG
 
-Transform a feature description into a shipped PR using a coordinated swarm of specialized agents working in parallel.
+Like `/lfg` but with parallel agents coordinated through a swarm team.
 
-## Feature Description
+## Feature
 
 <feature_description> #$ARGUMENTS </feature_description>
 
-**If the feature description above is empty, ask the user:** "What feature would you like to build? Please describe it clearly."
+If empty, ask: "What feature would you like to build?"
 
-Do not proceed until you have a clear feature description.
+---
 
-## Swarm Architecture
+## Workflow
 
-```
-                    ┌─────────────────┐
-                    │   TEAM LEAD     │
-                    │ (You - Orchestrator) │
-                    └────────┬────────┘
-                             │
-         ┌───────────────────┼───────────────────┐
-         ▼                   ▼                   ▼
-   ┌──────────┐        ┌──────────┐        ┌──────────┐
-   │ Planner  │        │Researcher│        │  Worker  │
-   └──────────┘        └──────────┘        └──────────┘
-         │                   │                   │
-         ▼                   ▼                   ▼
-   ┌──────────┐        ┌──────────┐        ┌──────────┐
-   │ Reviewer │        │  Tester  │        │Resolver(s)│
-   └──────────┘        └──────────┘        └──────────┘
-                             │
-                             ▼
-                       ┌──────────┐
-                       │  Video   │
-                       └──────────┘
-```
-
-## Step 1: Create Swarm Team
-
-Create a new team for this engineering swarm:
+### 1. Create Team
 
 ```
-TeammateTool:
-  operation: spawnTeam
+Teammate operation: spawnTeam
   team_name: "slfg-{YYYYMMDD-HHMMSS}"
   description: "Swarm for: {feature_description}"
 ```
 
-Store the team name for use throughout this workflow.
+### 2. Create Tasks
 
-## Step 2: Create Task List with Dependencies
+Create all tasks upfront. Use `TaskCreate` then `TaskUpdate` to set dependencies:
 
-Create all tasks upfront with their dependency relationships:
+| # | Task | BlockedBy | Parallel Group |
+|---|------|-----------|----------------|
+| 1 | Create implementation plan | - | A |
+| 2 | Research best practices | - | A |
+| 3 | Implement feature | 1, 2 | B |
+| 4 | Review: Rails conventions | 3 | C |
+| 5 | Review: Security | 3 | C |
+| 6 | Review: Performance | 3 | C |
+| 7 | Review: Simplicity | 3 | C |
+| 8 | Run browser tests | 3 | C |
+| 9 | Resolve all findings | 4-8 | D |
+| 10 | Record feature video | 9 | E |
+| 11 | Create pull request | 10 | E |
 
-### Task 1: Create Implementation Plan
-```
-TaskCreate:
-  subject: "Create implementation plan"
-  description: |
-    Run /workflows:plan for: {feature_description}
-    Write plan to docs/plans/ following naming convention.
-    Use ExitPlanMode when ready for approval.
-  activeForm: "Planning feature"
-```
+### 3. Phase A: Plan + Research (parallel)
 
-### Task 2: Research Best Practices (Parallel with Task 1)
-```
-TaskCreate:
-  subject: "Research best practices and patterns"
-  description: |
-    Research using:
-    - Context7 for framework documentation
-    - WebSearch for current best practices
-    - Codebase patterns via repo-research-analyst
-    Write findings to enhance the plan.
-  activeForm: "Researching patterns"
-```
+**Launch in a single message with multiple Task calls:**
 
-### Task 3: Implement Feature (Blocked by 1 & 2)
 ```
-TaskCreate:
-  subject: "Implement the approved plan"
-  description: |
-    Run /workflows:work on the approved plan.
-    Create incremental commits.
-    Push to feature branch.
-  activeForm: "Implementing feature"
-```
-Then: `TaskUpdate taskId: 3, addBlockedBy: ["1", "2"]`
-
-### Task 4: Review Implementation (Blocked by 3)
-```
-TaskCreate:
-  subject: "Review code changes"
-  description: |
-    Run parallel review agents:
-    - kieran-rails-reviewer
-    - dhh-rails-reviewer
-    - code-simplicity-reviewer
-    - security-sentinel
-    - performance-oracle
-    Create todos for findings in todos/ directory.
-  activeForm: "Reviewing implementation"
-```
-Then: `TaskUpdate taskId: 4, addBlockedBy: ["3"]`
-
-### Task 5: Run Browser Tests (Blocked by 3, Parallel with 4)
-```
-TaskCreate:
-  subject: "Run browser tests"
-  description: |
-    Run /test-browser on affected pages.
-    Create P1 todos for any failures.
-  activeForm: "Running browser tests"
-```
-Then: `TaskUpdate taskId: 5, addBlockedBy: ["3"]`
-
-### Task 6: Resolve Findings (Blocked by 4 & 5)
-```
-TaskCreate:
-  subject: "Fix review findings and test failures"
-  description: |
-    Run /resolve_todo_parallel on all pending todos.
-    Re-run tests after fixes.
-  activeForm: "Resolving findings"
-```
-Then: `TaskUpdate taskId: 6, addBlockedBy: ["4", "5"]`
-
-### Task 7: Record Feature Video (Blocked by 6)
-```
-TaskCreate:
-  subject: "Record feature demo video"
-  description: |
-    Run /feature-video for the PR.
-    Upload and embed in PR description.
-  activeForm: "Recording demo video"
-```
-Then: `TaskUpdate taskId: 7, addBlockedBy: ["6"]`
-
-### Task 8: Create Pull Request (Blocked by 7)
-```
-TaskCreate:
-  subject: "Create pull request"
-  description: |
-    Push all changes.
-    Create PR with summary, screenshots, video.
-    Include Compound Engineered badge.
-  activeForm: "Creating pull request"
-```
-Then: `TaskUpdate taskId: 8, addBlockedBy: ["7"]`
-
-## Step 3: Spawn Phase 1 Agents (Parallel)
-
-Spawn Planner and Researcher agents to work simultaneously:
-
-### Spawn Planner Agent
-```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
   name: "planner"
   mode: "plan"
   prompt: |
-    # Planner Agent
+    You are the Planner. Team: {team_name}
 
-    You are the **Planner** for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "1" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "1", status: "in_progress", owner: "planner"
+    1. Claim task #1: TaskUpdate taskId: "1", status: "in_progress", owner: "planner"
     2. Run /workflows:plan for: {feature_description}
-    3. Create a comprehensive plan in docs/plans/
-    4. When plan is ready, use ExitPlanMode to request team lead approval
-    5. After approval, mark complete: TaskUpdate taskId: "1", status: "completed"
+    3. Use ExitPlanMode when ready - team-lead will approve
+    4. After approval: TaskUpdate taskId: "1", status: "completed"
 
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: planner
-    - Send messages to team-lead if you have questions or are blocked
-
-    Work autonomously. Your plan will be reviewed before implementation begins.
+    Send findings to researcher if relevant.
 ```
 
-### Spawn Researcher Agent
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
   name: "researcher"
   prompt: |
-    # Researcher Agent
+    You are the Researcher. Team: {team_name}
 
-    You are the **Researcher** for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "2" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "2", status: "in_progress", owner: "researcher"
-    2. Research best practices for: {feature_description}
-    3. Use these tools:
-       - mcp__plugin_compound-engineering_context7__resolve-library-id
-       - mcp__plugin_compound-engineering_context7__query-docs
-       - WebSearch for current (2026) best practices
-       - Grep/Glob to find similar patterns in codebase
-    4. Write findings to docs/research/ or add to the plan file
-    5. Mark complete: TaskUpdate taskId: "2", status: "completed"
-
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: researcher
-    - Send findings to planner if they should inform the plan
-    - Send messages to team-lead if blocked
-
-    Work autonomously and thoroughly.
+    1. Claim task #2: TaskUpdate taskId: "2", status: "in_progress", owner: "researcher"
+    2. Research best practices:
+       - Context7 for framework docs
+       - WebSearch for current patterns
+       - Grep/Glob for codebase conventions
+    3. Write findings to the plan file or docs/research/
+    4. Send key findings to planner via Teammate write
+    5. TaskUpdate taskId: "2", status: "completed"
 ```
 
-**Launch both agents in parallel** (single message with multiple Task tool calls).
+**As team lead:**
+- Monitor with `TaskList`
+- When planner sends `plan_approval_request`: review and `approvePlan` or `rejectPlan`
+- Wait for both tasks 1 and 2 to complete before Phase B
 
-## Step 4: Handle Plan Approval
-
-As team lead, you will receive a `plan_approval_request` message from the Planner agent.
-
-### When you receive the plan approval request:
-
-1. **Read the plan file** to review what's proposed
-2. **Evaluate the plan:**
-   - Is it complete and actionable?
-   - Does it follow project conventions?
-   - Are dependencies identified?
-   - Is the scope appropriate?
-
-3. **Approve or Reject:**
-
-   **To Approve:**
-   ```
-   TeammateTool:
-     operation: approvePlan
-     target_agent_id: "planner"
-     request_id: "{requestId from message}"
-   ```
-
-   **To Reject with Feedback:**
-   ```
-   TeammateTool:
-     operation: rejectPlan
-     target_agent_id: "planner"
-     request_id: "{requestId from message}"
-     feedback: "Please add more detail about error handling..."
-   ```
-
-4. **Wait for both Phase 1 tasks to complete** before proceeding.
-
-## Step 5: Spawn Worker Agent
-
-Once Tasks 1 and 2 are complete:
+### 4. Phase B: Implement
 
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
   name: "worker"
   prompt: |
-    # Worker Agent
+    You are the Worker. Team: {team_name}
 
-    You are the **Worker** for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "3" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "3", status: "in_progress", owner: "worker"
-    2. Read the approved plan at docs/plans/{plan_file}
-    3. Run /workflows:work following the plan exactly
+    1. Claim task #3: TaskUpdate taskId: "3", status: "in_progress", owner: "worker"
+    2. Read the approved plan in docs/plans/
+    3. Run /workflows:work following the plan
     4. Create incremental commits with conventional messages
     5. Push to feature branch (never main)
-    6. Mark complete: TaskUpdate taskId: "3", status: "completed"
+    6. TaskUpdate taskId: "3", status: "completed"
 
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: worker
-    - Send progress updates to team-lead for significant milestones
-    - Send messages to team-lead if blocked
-
-    Work autonomously. Focus on completing the implementation.
+    Send progress to team-lead for significant milestones.
 ```
 
-## Step 6: Spawn Reviewer and Tester (Parallel)
+### 5. Phase C: Review + Test (5 parallel agents)
 
-Once Task 3 (implementation) is complete, spawn both:
+**Launch ALL FIVE in a single message:**
 
-### Spawn Reviewer Agent
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
-  name: "reviewer"
+  name: "reviewer-rails"
   prompt: |
-    # Reviewer Agent
+    You are the Rails Reviewer. Team: {team_name}
 
-    You are the **Reviewer** for the slfg engineering swarm.
+    1. Claim task #4: TaskUpdate taskId: "4", status: "in_progress", owner: "reviewer-rails"
+    2. Run: Task kieran-rails-reviewer "Review changes on this branch"
+    3. Create todos in todos/ for each finding
+    4. TaskUpdate taskId: "4", status: "completed"
 
-    ## Your Task
-    TaskGet taskId: "4" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "4", status: "in_progress", owner: "reviewer"
-    2. Get the changed files: git diff main...HEAD --name-only
-    3. Spawn parallel review agents:
-       - Task kieran-rails-reviewer("Review the changes")
-       - Task code-simplicity-reviewer("Review for simplicity")
-       - Task security-sentinel("Check for security issues")
-       - Task performance-oracle("Check for performance issues")
-    4. Create todos for ALL findings in todos/ directory
-    5. Mark complete: TaskUpdate taskId: "4", status: "completed"
-
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: reviewer
-    - Send summary to team-lead when complete
-
-    Document findings but do NOT fix them. Resolvers handle fixes.
+    Do NOT fix issues - just document them.
 ```
 
-### Spawn Tester Agent
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
+  team_name: "{team_name}"
+  name: "reviewer-security"
+  prompt: |
+    You are the Security Reviewer. Team: {team_name}
+
+    1. Claim task #5: TaskUpdate taskId: "5", status: "in_progress", owner: "reviewer-security"
+    2. Run: Task security-sentinel "Review changes for vulnerabilities"
+    3. Create todos in todos/ for each finding
+    4. TaskUpdate taskId: "5", status: "completed"
+
+    Do NOT fix issues - just document them.
+```
+
+```
+Task general-purpose:
+  team_name: "{team_name}"
+  name: "reviewer-perf"
+  prompt: |
+    You are the Performance Reviewer. Team: {team_name}
+
+    1. Claim task #6: TaskUpdate taskId: "6", status: "in_progress", owner: "reviewer-perf"
+    2. Run: Task performance-oracle "Review changes for performance"
+    3. Create todos in todos/ for each finding
+    4. TaskUpdate taskId: "6", status: "completed"
+
+    Do NOT fix issues - just document them.
+```
+
+```
+Task general-purpose:
+  team_name: "{team_name}"
+  name: "reviewer-simplicity"
+  prompt: |
+    You are the Simplicity Reviewer. Team: {team_name}
+
+    1. Claim task #7: TaskUpdate taskId: "7", status: "in_progress", owner: "reviewer-simplicity"
+    2. Run: Task code-simplicity-reviewer "Review changes for unnecessary complexity"
+    3. Create todos in todos/ for each finding
+    4. TaskUpdate taskId: "7", status: "completed"
+
+    Do NOT fix issues - just document them.
+```
+
+```
+Task general-purpose:
   team_name: "{team_name}"
   name: "tester"
   prompt: |
-    # Tester Agent
+    You are the Tester. Team: {team_name}
 
-    You are the **Tester** for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "5" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "5", status: "in_progress", owner: "tester"
+    1. Claim task #8: TaskUpdate taskId: "8", status: "in_progress", owner: "tester"
     2. Identify affected pages from git diff
     3. Run /test-browser on each affected page
-    4. Create P1 todos for any test failures in todos/
-    5. Mark complete: TaskUpdate taskId: "5", status: "completed"
+    4. Create todos in todos/ for failures
+    5. TaskUpdate taskId: "8", status: "completed"
 
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: tester
-    - Send results summary to team-lead
-
-    Document failures as todos but do NOT fix them.
+    Do NOT fix issues - just document them.
 ```
 
-**Launch both in parallel.**
+### 6. Phase D: Resolve
 
-## Step 7: Spawn Resolver Agents
-
-Once Tasks 4 and 5 are complete:
+When ALL of tasks 4-8 complete, spawn resolver:
 
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
   name: "resolver"
   prompt: |
-    # Resolver Agent
+    You are the Resolver. Team: {team_name}
 
-    You are the **Resolver** for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "6" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "6", status: "in_progress", owner: "resolver"
-    2. List all pending todos: ls todos/*-pending-*.md
-    3. For each todo, spawn a parallel resolver:
-       - Task pr-comment-resolver("Fix: {todo_description}")
-    4. Re-run tests after fixes if needed
-    5. Mark complete: TaskUpdate taskId: "6", status: "completed"
-
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: resolver
-
-    Fix all findings. Commit after each fix.
+    1. Claim task #9: TaskUpdate taskId: "9", status: "in_progress", owner: "resolver"
+    2. List todos: Glob pattern "todos/*-pending-*.md"
+    3. Run /resolve_todo_parallel to fix all findings in parallel
+    4. Verify fixes with tests if needed
+    5. TaskUpdate taskId: "9", status: "completed"
 ```
 
-## Step 8: Spawn Video Agent
+### 7. Phase E: Video + PR (parallel)
 
-Once Task 6 is complete:
+**Launch both in a single message:**
 
 ```
-Task:
-  subagent_type: general-purpose
+Task general-purpose:
   team_name: "{team_name}"
   name: "video"
   prompt: |
-    # Video Agent
+    You are the Video agent. Team: {team_name}
 
-    You are the **Video** agent for the slfg engineering swarm.
-
-    ## Your Task
-    TaskGet taskId: "7" to read your full assignment.
-
-    ## Instructions
-    1. Claim your task: TaskUpdate taskId: "7", status: "in_progress", owner: "video"
-    2. Run /feature-video for the current PR
-    3. Ensure video is uploaded and embedded in PR
-    4. Mark complete: TaskUpdate taskId: "7", status: "completed"
-
-    ## Communication
-    - You are part of team: {team_name}
-    - Your name is: video
+    1. Claim task #10: TaskUpdate taskId: "10", status: "in_progress", owner: "video"
+    2. Run /feature-video for the feature
+    3. Send video URL to team-lead via Teammate write
+    4. TaskUpdate taskId: "10", status: "completed"
 ```
 
-## Step 9: Create Pull Request
+**Team lead handles task #11 (Create PR):**
+1. Claim: `TaskUpdate taskId: "11", status: "in_progress", owner: "team-lead"`
+2. Wait for video URL from video agent
+3. Push all changes: `git push -u origin {branch}`
+4. Create PR with `gh pr create` including:
+   - Summary of changes
+   - Video embed
+   - Swarm stats
+   - Compound Engineered badge
+5. Complete: `TaskUpdate taskId: "11", status: "completed"`
 
-Once Task 7 is complete, handle Task 8 yourself (Team Lead):
-
-1. Claim the task: `TaskUpdate taskId: "8", status: "in_progress", owner: "team-lead"`
-
-2. Push all changes:
-   ```bash
-   git push -u origin {branch_name}
-   ```
-
-3. Create PR:
-   ```bash
-   gh pr create --title "feat: {feature_description}" --body "$(cat <<'EOF'
-   ## Summary
-   - {what was built}
-   - {key decisions}
-
-   ## Demo
-   {video embed from /feature-video}
-
-   ## Testing
-   - Browser tests: {pass/fail}
-   - Review agents: {findings resolved}
-
-   ## Swarm Stats
-   - Agents spawned: {count}
-   - Tasks completed: 8/8
-   - Team: {team_name}
-
-   ---
-   [![Compound Engineered](https://img.shields.io/badge/Compound-Engineered-6366f1)](https://github.com/EveryInc/compound-engineering-plugin)
-   Autonomous swarm with [Claude Code](https://claude.com/claude-code)
-   EOF
-   )"
-   ```
-
-4. Mark complete: `TaskUpdate taskId: "8", status: "completed"`
-
-## Step 10: Cleanup and Report
-
-### Shutdown Teammates
-
-Send shutdown requests to all remaining teammates:
+### 8. Cleanup
 
 ```
-For each active teammate:
-  TeammateTool:
-    operation: requestShutdown
-    target_agent_id: "{teammate_name}"
-    reason: "Swarm complete - PR created"
+# Shutdown all teammates
+Teammate operation: requestShutdown target_agent_id: "planner"
+Teammate operation: requestShutdown target_agent_id: "researcher"
+Teammate operation: requestShutdown target_agent_id: "worker"
+Teammate operation: requestShutdown target_agent_id: "reviewer-rails"
+Teammate operation: requestShutdown target_agent_id: "reviewer-security"
+Teammate operation: requestShutdown target_agent_id: "reviewer-perf"
+Teammate operation: requestShutdown target_agent_id: "reviewer-simplicity"
+Teammate operation: requestShutdown target_agent_id: "tester"
+Teammate operation: requestShutdown target_agent_id: "resolver"
+Teammate operation: requestShutdown target_agent_id: "video"
+
+# Clean up team resources
+Teammate operation: cleanup
 ```
 
-### Cleanup Team Resources
-
-```
-TeammateTool:
-  operation: cleanup
-```
-
-### Final Report
-
-Present the completion summary:
+### 9. Final Report
 
 ```markdown
-## Swarm Complete!
+## Swarm Complete
 
 **Feature:** {feature_description}
 **PR:** {pr_url}
-**Branch:** {branch_name}
 **Team:** {team_name}
 
-### Task Summary
-| Task | Agent | Status |
-|------|-------|--------|
-| Create plan | planner | Complete |
-| Research | researcher | Complete |
-| Implement | worker | Complete |
-| Review | reviewer | Complete |
-| Test | tester | Complete |
-| Resolve | resolver | Complete |
-| Video | video | Complete |
-| Create PR | team-lead | Complete |
+### Agents Spawned: 10
+| Agent | Task | Status |
+|-------|------|--------|
+| planner | Create plan | Complete |
+| researcher | Research | Complete |
+| worker | Implement | Complete |
+| reviewer-rails | Rails review | Complete |
+| reviewer-security | Security review | Complete |
+| reviewer-perf | Performance review | Complete |
+| reviewer-simplicity | Simplicity review | Complete |
+| tester | Browser tests | Complete |
+| resolver | Fix findings | Complete |
+| video | Record demo | Complete |
 
-### Artifacts
-- Plan: docs/plans/{plan_file}
-- PR: {pr_url}
-- Video: {video_url}
-
-### Swarm Stats
-- Total agents spawned: {count}
-- Messages exchanged: {count}
-- Time elapsed: {duration}
+### Parallelism
+- Phase A: 2 agents (plan + research)
+- Phase C: 5 agents (4 reviewers + tester)
+- Phase E: 2 agents (video + PR)
 ```
 
-## Error Handling
+---
 
-### If an agent fails:
-1. Check the error message
-2. Option to respawn the agent with the same task
-3. Or handle manually and mark task complete
+## Team Lead Orchestration Loop
 
-### If plan is rejected:
-1. Planner receives feedback and revises
-2. Planner resubmits with ExitPlanMode
-3. Repeat until approved
+While tasks remain incomplete:
 
-### If tests fail:
-1. Tester creates P1 todos
-2. Resolver fixes issues
-3. Tester re-runs tests
-4. Continue when all pass
+1. **Check progress:** `TaskList`
+2. **Handle messages:** Respond to teammate messages (plan approval, questions, blockers)
+3. **Spawn next phase:** When blockers clear, spawn the next parallel group
+4. **Monitor:** Use `Teammate write` to check on stuck agents
 
-### If user interrupts:
-1. Cleanup team resources
-2. Preserve work on branch
-3. Can resume later with new swarm
-
-## Key Principles
-
-1. **Parallelism** - Run independent phases simultaneously
-2. **Specialization** - Each agent focuses on one role
-3. **Autonomy** - Agents work independently, coordinate through tasks
-4. **Visibility** - Team lead maintains oversight of all progress
-5. **Resilience** - Failures are isolated, recoverable
-
-## When to Use /slfg vs /lfg
-
-| Use /slfg when... | Use /lfg when... |
-|-------------------|------------------|
-| Feature is complex (multiple phases) | Simple, linear workflow |
-| Want maximum parallelism | Prefer sequential execution |
-| Multiple independent workstreams | Single focused task |
-| Want to see swarm coordination | Want simpler mental model |
+**Key principle:** Spawn as many agents as possible in each phase. The dependency graph handles sequencing.
