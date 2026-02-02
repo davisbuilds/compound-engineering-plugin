@@ -5,6 +5,26 @@ All notable changes to the compound-engineering plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-01-27
+
+### Added
+
+- **`/build-website` command** - Scaffold a complete Rails 8 application with DHH/37signals conventions
+  - Generates Rails 8 app with PostgreSQL and Tailwind
+  - Custom passwordless magic link authentication (~150 lines, no Devise)
+  - Solid stack: Solid Queue, Solid Cache, Solid Cable (no Redis)
+  - Minitest with fixtures (no RSpec, no factory_bot)
+  - Content Security Policy configured
+  - Full auth flow: sessions, magic links, user model
+  - Sample views with Tailwind styling
+  - Integration tests for authentication
+
+### Summary
+
+- 28 agents, 27 commands, 15 skills, 1 MCP server
+
+---
+
 ## [2.30.0] - 2026-01-25
 
 ### Added

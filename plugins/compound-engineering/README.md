@@ -7,7 +7,7 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 | Component | Count |
 |-----------|-------|
 | Agents | 28 |
-| Commands | 26 |
+| Commands | 27 |
 | Skills | 15 |
 | MCP Servers | 1 |
 
@@ -87,6 +87,7 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | Command | Description |
 |---------|-------------|
 | `/agent-native-audit` | Audit features for agent-native compliance |
+| `/build-website` | Scaffold Rails 8 app with Hotwire, auth, and DHH conventions |
 | `/deepen-plan` | Enhance plans with parallel research agents for each section |
 | `/changelog` | Create engaging changelogs for recent merges |
 | `/create-agent-skill` | Create or edit Claude Code skills |
