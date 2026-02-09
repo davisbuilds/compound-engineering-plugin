@@ -3,6 +3,7 @@ import path from "path"
 import { loadClaudePlugin } from "../src/parsers/claude"
 import { convertClaudeToOpenCode } from "../src/converters/claude-to-opencode"
 import { parseFrontmatter } from "../src/utils/frontmatter"
+import type { ClaudePlugin } from "../src/types/claude"
 
 const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
 
@@ -182,5 +183,70 @@ describe("convertClaudeToOpenCode", () => {
 
     // Normal commands should still be present
     expect(bundle.config.command?.["workflows:review"]).toBeDefined()
+  })
+
+  test("rewrites .claude/ paths to .opencode/ in command bodies", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [],
+      commands: [
+        {
+          name: "review",
+          description: "Review command",
+          body: `Read \`.claude/compound-engineering.local.md\` (project-level) or \`~/.claude/compound-engineering.local.md\` (global fallback).
+
+If no settings file exists, auto-detect project type.
+
+Run \`/compound-engineering-setup\` to create a settings file.`,
+          sourcePath: "/tmp/plugin/commands/review.md",
+        },
+      ],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToOpenCode(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const template = bundle.config.command?.["review"]?.template ?? ""
+
+    // .claude/ paths should be rewritten to .opencode/
+    expect(template).toContain(".opencode/compound-engineering.local.md")
+    expect(template).not.toContain(".claude/compound-engineering.local.md")
+
+    // Global path should be rewritten
+    expect(template).toContain("~/.config/opencode/compound-engineering.local.md")
+    expect(template).not.toContain("~/.claude/compound-engineering.local.md")
+  })
+
+  test("rewrites .claude/ paths in agent bodies", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [
+        {
+          name: "test-agent",
+          description: "Test agent",
+          body: "Read `.claude/compound-engineering.local.md` for config.",
+          sourcePath: "/tmp/plugin/agents/test-agent.md",
+        },
+      ],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToOpenCode(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const agentFile = bundle.agents.find((a) => a.name === "test-agent")
+    expect(agentFile).toBeDefined()
+    expect(agentFile!.content).toContain(".opencode/compound-engineering.local.md")
+    expect(agentFile!.content).not.toContain(".claude/compound-engineering.local.md")
   })
 })
