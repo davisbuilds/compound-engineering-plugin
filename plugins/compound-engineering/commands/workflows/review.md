@@ -63,14 +63,7 @@ If a review agent flags any file in these directories for cleanup or removal, di
 
 Read `compound-engineering.local.md` in the project root. If found, use `review_agents` from YAML frontmatter. If the markdown body contains review context, pass it to each agent as additional instructions.
 
-If no settings file exists, auto-detect project type and use defaults:
-
-- **Rails** (Gemfile + config/routes.rb): kieran-rails-reviewer, dhh-rails-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle
-- **Python** (pyproject.toml or requirements.txt): kieran-python-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle
-- **TypeScript** (tsconfig.json): kieran-typescript-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle
-- **General**: code-simplicity-reviewer, security-sentinel, performance-oracle
-
-Run `/compound-engineering-setup` to create a settings file with defaults.
+If no settings file exists, invoke the `setup` skill to create one. Then read the newly created file and continue.
 
 #### Parallel Agents to review the PR:
 

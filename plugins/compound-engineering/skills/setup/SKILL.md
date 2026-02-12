@@ -1,16 +1,16 @@
 ---
-name: compound-engineering-setup
-description: Configure review agents for your project
+name: setup
+description: Configure which review agents run for your project. Auto-detects stack and writes compound-engineering.local.md.
 disable-model-invocation: true
 ---
 
 # Compound Engineering Setup
 
-Interactive setup for `compound-engineering.local.md` — configures which agents run during `/workflows:review`.
+Interactive setup for `compound-engineering.local.md` — configures which agents run during `/workflows:review` and `/workflows:work`.
 
 ## Step 1: Check Existing Config
 
-Read `compound-engineering.local.md`. If it exists, display current settings summary and use AskUserQuestion:
+Read `compound-engineering.local.md` in the project root. If it exists, display current settings summary and use AskUserQuestion:
 
 ```
 question: "Settings file already exists. What would you like to do?"
@@ -27,7 +27,7 @@ options:
 If "View current": read and display the file, then stop.
 If "Cancel": stop.
 
-## Step 2: Detect Project Type
+## Step 2: Detect and Ask
 
 Auto-detect the project stack:
 
@@ -41,7 +41,7 @@ test -f requirements.txt && echo "python" || \
 echo "general"
 ```
 
-Display what was detected, then ask:
+Use AskUserQuestion:
 
 ```
 question: "Detected {type} project. How would you like to configure?"
@@ -50,21 +50,21 @@ options:
   - label: "Auto-configure (Recommended)"
     description: "Use smart defaults for {type}. Done in one click."
   - label: "Customize"
-    description: "Choose focus areas, review depth, and agents yourself."
+    description: "Choose stack, focus areas, and review depth."
 ```
 
-### If Auto-configure → Skip to Step 5 with these defaults:
+### If Auto-configure → Skip to Step 4 with defaults:
 
-**Rails:** `kieran-rails-reviewer, dhh-rails-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle`
-**Python:** `kieran-python-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle`
-**TypeScript:** `kieran-typescript-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle`
-**General:** `code-simplicity-reviewer, security-sentinel, performance-oracle, architecture-strategist`
+- **Rails:** `[kieran-rails-reviewer, dhh-rails-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle]`
+- **Python:** `[kieran-python-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle]`
+- **TypeScript:** `[kieran-typescript-reviewer, code-simplicity-reviewer, security-sentinel, performance-oracle]`
+- **General:** `[code-simplicity-reviewer, security-sentinel, performance-oracle, architecture-strategist]`
 
-### If Customize → Continue to Step 3
+### If Customize → Step 3
 
-## Step 3: Confirm Stack (Customize path only)
+## Step 3: Customize (3 questions)
 
-Use AskUserQuestion to confirm or override the detected stack:
+**a. Stack** — confirm or override:
 
 ```
 question: "Which stack should we optimize for?"
@@ -82,12 +82,10 @@ options:
 
 Only show options that differ from the detected type.
 
-## Step 4a: Choose Review Focus Areas (Customize path only)
-
-Use AskUserQuestion with multiSelect:
+**b. Focus areas** — multiSelect:
 
 ```
-question: "Which review areas matter most for this project?"
+question: "Which review areas matter most?"
 header: "Focus"
 multiSelect: true
 options:
@@ -101,9 +99,7 @@ options:
     description: "Over-engineering, YAGNI violations (code-simplicity-reviewer)"
 ```
 
-## Step 4b: Choose Review Depth (Customize path only)
-
-Use AskUserQuestion:
+**c. Depth:**
 
 ```
 question: "How thorough should reviews be?"
@@ -114,31 +110,29 @@ options:
   - label: "Fast"
     description: "Stack reviewers + code simplicity only. Less context, quicker."
   - label: "Comprehensive"
-    description: "All of the above + git history, data integrity, agent-native checks."
+    description: "All above + git history, data integrity, agent-native checks."
 ```
 
-## Step 5: Build Agent List and Write File
+## Step 4: Build Agent List and Write File
 
-Map selections to agents:
-
-**Stack-specific agents (always included):**
+**Stack-specific agents:**
 - Rails → `kieran-rails-reviewer, dhh-rails-reviewer`
 - Python → `kieran-python-reviewer`
 - TypeScript → `kieran-typescript-reviewer`
 - General → (none)
 
-**Focus area agents (from Step 4a, or all four for auto-configure):**
+**Focus area agents:**
 - Security → `security-sentinel`
 - Performance → `performance-oracle`
 - Architecture → `architecture-strategist`
 - Code simplicity → `code-simplicity-reviewer`
 
-**Depth extras (from Step 4b, or "Thorough" for auto-configure):**
+**Depth:**
 - Thorough: stack + selected focus areas
 - Fast: stack + `code-simplicity-reviewer` only
-- Comprehensive: stack + all focus areas + `git-history-analyzer, data-integrity-guardian, agent-native-reviewer`
+- Comprehensive: all above + `git-history-analyzer, data-integrity-guardian, agent-native-reviewer`
 
-**Plan review agents:** always use the stack-specific reviewer + `code-simplicity-reviewer`.
+**Plan review agents:** stack-specific reviewer + `code-simplicity-reviewer`.
 
 Write `compound-engineering.local.md`:
 
@@ -159,9 +153,7 @@ Examples:
 - "Performance-critical: we serve 10k req/s on this endpoint"
 ```
 
-## Step 6: Confirm
-
-Display summary:
+## Step 5: Confirm
 
 ```
 Saved to compound-engineering.local.md
@@ -171,7 +163,6 @@ Review depth: {depth}
 Agents:       {count} configured
               {agent list, one per line}
 
-Tip: Add project-specific instructions in the "Review Context" section.
-     Run /workflows:review to use your configured agents.
-     Re-run /compound-engineering-setup anytime to reconfigure.
+Tip: Edit the "Review Context" section to add project-specific instructions.
+     Re-run this setup anytime to reconfigure.
 ```

@@ -175,16 +175,9 @@ This command takes a work document (plan, specification, or todo file) and execu
 
 2. **Consider Reviewer Agents** (Optional)
 
-   Use for complex, risky, or large changes. Read agents from `compound-engineering.local.md` frontmatter (`review_agents`). If no settings file, auto-detect project type and use defaults:
-
-   - **Rails**: kieran-rails-reviewer, code-simplicity-reviewer
-   - **Python**: kieran-python-reviewer, code-simplicity-reviewer
-   - **TypeScript**: kieran-typescript-reviewer, code-simplicity-reviewer
-   - **General**: code-simplicity-reviewer, security-sentinel
+   Use for complex, risky, or large changes. Read agents from `compound-engineering.local.md` frontmatter (`review_agents`). If no settings file, invoke the `setup` skill to create one.
 
    Run configured agents in parallel with Task tool. Present findings and address critical issues.
-
-   Run `/compound-engineering-setup` to configure which agents to use.
 
 3. **Final Validation**
    - All TodoWrite tasks marked completed
