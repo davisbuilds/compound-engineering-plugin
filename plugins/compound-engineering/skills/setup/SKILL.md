@@ -166,3 +166,20 @@ Agents:       {count} configured
 Tip: Edit the "Review Context" section to add project-specific instructions.
      Re-run this setup anytime to reconfigure.
 ```
+
+## Step 6: Foundations Check (optional)
+
+Use AskUserQuestion:
+
+```
+question: "Would you like to audit your repo's foundations? Checks CLAUDE.md quality, conventions, tech debt tracking, and more."
+header: "Foundations"
+options:
+  - label: "Yes (Recommended)"
+    description: "Run tiered audit: CLAUDE.md quality, conventions, tech debt, architecture docs."
+  - label: "Skip"
+    description: "Finish setup without auditing foundations."
+```
+
+If "Skip": end setup.
+If "Yes": invoke `compound-foundations` workflow `workflows/audit-foundations.md`.
