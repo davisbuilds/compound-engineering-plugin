@@ -61,10 +61,33 @@ Include summary line:
 
 `X/Y foundations present.`
 
-## Step 6: Offer Artifact Generation
+## Step 6: Ask and Generate Missing Artifacts
 
-For missing artifacts, ask user if they want generation.
-If yes, invoke `generate-artifacts.md` workflow.
+Use AskUserQuestion:
+
+```
+question: "Foundations audit complete. Generate missing artifacts now?"
+header: "Generate"
+options:
+  - label: "Create all missing (Recommended)"
+    description: "Generate all missing files from templates in one pass."
+  - label: "Choose files"
+    description: "Pick specific missing artifacts to generate."
+  - label: "Skip"
+    description: "Keep the scorecard only for manual follow-up."
+```
+
+If "Create all missing":
+- Invoke `generate-artifacts.md`
+- Pass every missing artifact from the scorecard
+- Create files immediately in `docs/` (and `CLAUDE.md` only if missing)
+
+If "Choose files":
+- Invoke `generate-artifacts.md`
+- Ask which missing artifacts to generate and create only those
+
+If "Skip":
+- Keep audit output only; no files are generated
 
 ## Step 7: Report Promotion Opportunities
 
@@ -82,5 +105,6 @@ Do not auto-modify conventions in audit mode.
 - [ ] Stack-specific tier checked based on repo signals
 - [ ] Scorecard uses `Artifact | Status | Action` format
 - [ ] Summary line includes `X/Y foundations present.`
-- [ ] Missing artifacts can be generated on request
+- [ ] AskUserQuestion is shown after audit with `Create all missing` option
+- [ ] Missing artifacts can be generated in one pass
 </success_criteria>
