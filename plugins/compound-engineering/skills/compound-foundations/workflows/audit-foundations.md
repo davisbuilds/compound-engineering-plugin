@@ -4,6 +4,7 @@
 Read these references before auditing:
 1. `../references/progressive-disclosure.md`
 2. `../references/repo-as-system-of-record.md`
+3. External skill: `https://github.com/anthropics/claude-plugins-official/blob/main/plugins/claude-md-management/skills/claude-md-improver/SKILL.md`
 </required_reading>
 
 <process>
@@ -23,14 +24,23 @@ Use this only to decide stack-specific checks.
 Check these artifacts:
 
 - `CLAUDE.md`
+- `AGENTS.md` (or `agent.md` if your repo uses that naming)
 - `docs/CONVENTIONS.md`
 - `docs/TECH_DEBT.md`
 
-For `CLAUDE.md`, also check quality:
+Before evaluating CLAUDE/agent context quality, explicitly load and apply the external `claude-md-improver` skill from:
+
+`https://github.com/anthropics/claude-plugins-official/blob/main/plugins/claude-md-management/skills/claude-md-improver/SKILL.md`
+
+Use it to produce a concise quality assessment for the repo's instruction files.
+
+For `CLAUDE.md` and `AGENTS.md`/`agent.md`, check quality:
 
 - Is it map-style?
 - Is it under ~200 lines?
 - Does it link to docs artifacts?
+- Are commands/workflows actionable and current?
+- Are architecture and non-obvious gotchas clear?
 
 ## Step 3: Audit Recommended Tier
 
