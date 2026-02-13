@@ -182,4 +182,9 @@ options:
 ```
 
 If "Skip": end setup.
-If "Yes": invoke `compound-foundations` workflow `workflows/audit-foundations.md`.
+If "Yes": explicitly load the foundations skill, then run its audit workflow:
+
+1. Load skill: `skill: compound-foundations`
+2. Invoke workflow: `workflows/audit-foundations.md`
+
+Do not run foundations checks inline in `setup`; always delegate to the `compound-foundations` skill.
