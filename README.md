@@ -18,9 +18,9 @@ A Claude Code plugin marketplace featuring the **Compound Engineering Plugin** â
 /add-plugin compound-engineering
 ```
 
-## OpenCode, Codex, Droid, Pi, Gemini & GitHub Copilot (experimental) Install
+## OpenCode, Codex, Droid, Pi, Gemini, Copilot & Kiro (experimental) Install
 
-This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, Pi, Gemini CLI and GitHub Copilot.
+This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, Pi, Gemini CLI, GitHub Copilot, and Kiro CLI.
 
 ```bash
 # convert the compound-engineering plugin into OpenCode format
@@ -40,6 +40,9 @@ bunx @every-env/compound-plugin install compound-engineering --to gemini
 
 # convert to GitHub Copilot format
 bunx @every-env/compound-plugin install compound-engineering --to copilot
+
+# convert to Kiro CLI format
+bunx @every-env/compound-plugin install compound-engineering --to kiro
 ```
 
 Local dev:
@@ -54,6 +57,7 @@ Droid output is written to `~/.factory/` with commands, droids (agents), and ski
 Pi output is written to `~/.pi/agent/` by default with prompts, skills, extensions, and `compound-engineering/mcporter.json` for MCPorter interoperability.
 Gemini output is written to `.gemini/` with skills (from agents), commands (`.toml`), and `settings.json` (MCP servers). Namespaced commands create directory structure (`workflows:plan` â†’ `commands/workflows/plan.toml`). Skills use the identical SKILL.md standard and pass through unchanged.
 Copilot output is written to `.github/` with agents (`.agent.md`), skills (`SKILL.md`), and `copilot-mcp-config.json`. Agents get Copilot frontmatter (`description`, `tools: ["*"]`, `infer: true`), commands are converted to agent skills, and MCP server env vars are prefixed with `COPILOT_MCP_`.
+Kiro output is written to `.kiro/` with custom agents (`.json` configs + prompt `.md` files), skills (from commands), pass-through skills, steering files (from CLAUDE.md), and `mcp.json`. Agents get `includeMcpJson: true` for MCP server access. Only stdio MCP servers are supported (HTTP servers are skipped with a warning).
 
 All provider targets are experimental and may change as the formats evolve.
 
